@@ -1,0 +1,98 @@
+<table>
+    <thead>
+    <tr>
+        <th #TH>#</th>
+        <th #TH *ngFor="let header of headers" [style.width]="header.width" [style.minWidth]="header.minWidth" [style.maxWidth]="header.maxWidth">{{header.label}}
+            <nz-dropdown [nzTrigger]="'click'" *ngIf="header.allowBatch">
+                <i nz-dropdown class="icon-edit"></i>
+                <ul nz-menu style="max-height: 300px;overflow:auto;">
+                    <li nz-menu-item *ngFor="let item of header.options" (click)="batchOperate(header, item.value)">{{item.label}}</li>
+                </ul>
+            </nz-dropdown>
+        </th>
+        <th #TH *ngIf="!disabled" class="action">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of data; let row = index" [nyGroup]="row" [autoDestroy]="false" [class.error]="item.$hasError">
+        <td>
+            <span>{{row + 1}}</span>
+            <div class="error-msg">
+                <div>
+                    <p *ngFor="let notice of item.$errorNotice">{{notice}}</p>
+                </div>
+            </div>
+        </td>
+        <td *ngFor="let header of headers" [class.has-icon]="header.icon && !isDisabled(header, item)" [ngSwitch]="isDisabled(header, item) ? '' : header.type">
+            <input *ngSwitchCase="'string'" type="text" nz-input (focus)="focus(header, item)" (blur)="blur(header, item)"
+                   [nyDeepName]="header.key" errorStyle="float" [replace]="toString(header.replace, item)" (onChange)="change(header, item, $event)">
+
+            <nz-input-number *ngSwitchCase="'number'" [nzMin]="toString(header.min, item)" [nzMax]="toString(header.max, item)"
+                             [nyDeepName]="header.key" errorStyle="float" [format]="toString(header.format, item)" (onChange)="change(header, item, $event)"></nz-input-number>
+
+            <nz-select *ngSwitchCase="'select'" [nzAllowClear]="header.allowClear" [(nzOpen)]="item.$open[header.key]" nzShowSearch [nzDropdownMatchSelectWidth]="false"
+                       [nzServerSearch]="header.onSearch" (nzOnSearch)="search($event, header, item)"
+                       [nyDeepName]="header.key" errorStyle="float" (onChange)="change(header, item, $event)">
+                <nz-option *ngIf="header.onAdd" nzCustomContent>
+                    <div (click)="add(header, item)"><span>{{item.$keywords}}</span></div>
+                </nz-option>
+                <ng-container *ngIf="!item.$loading">
+                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                </ng-container>
+                <nz-option *ngIf="item.$loading" nzDisabled nzCustomContent>
+                    <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
+                </nz-option>
+                <nz-option *ngIf="showCreate(header)" nzCustomContent>
+                    <div (click)="onCreate(header, item)">
+                        <i class="anticon anticon-plus"></i><span>添加</span>
+                    </div>
+                </nz-option>
+            </nz-select>
+
+            <nz-date-picker *ngSwitchCase="'date'" [nyDeepName]="header.key"
+                            errorStyle="float" [format]="toString(header.format, item)" (onChange)="change(header, item, $event)"></nz-date-picker>
+
+            <span *ngSwitchDefault>{{value(item, header)}}</span>
+
+            <i *ngIf="header.icon && !isDisabled(header, item)" [class]="header.icon" (click)="iconClick(header)"></i>
+        </td>
+        <td *ngIf="!disabled" class="action">
+            <i *ngIf="row !== data.length - 1 || !autoAdd" class="icon-delete" (click)="remove(row)"></i>
+        </td>
+    </tr>
+    <tr *ngIf="!disabled && showFooter && (!max || data.length <= max - 1)">
+        <td>{{data.length + 1}}</td>
+        <td *ngFor="let header of activeRow" [class.has-icon]="header.icon" [ngSwitch]="header.type" [attr.colspan]="header.activeColspan">
+            <input *ngSwitchCase="'string'" type="text" nz-input [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)" (focus)="focus(null, header)" (blur)="blur(null, header)">
+
+            <nz-input-number *ngSwitchCase="'number'" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-input-number>
+
+            <nz-date-picker *ngSwitchCase="'date'" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-date-picker>
+
+            <nz-select *ngSwitchCase="'select'" [(ngModel)]="newItem[header.key]" [(nzOpen)]="newItem.$open[header.key]" (ngModelChange)="change(header)"
+                       [nzAllowClear]="header.allowClear" nzShowSearch [nzDropdownMatchSelectWidth]="false"
+                       [nzServerSearch]="header.onSearch" (nzOnSearch)="search($event, header, newItem)" (nzScrollToBottom)="search(null, header, newItem)">
+                <nz-option *ngIf="header.onAdd" nzCustomContent>
+                    <div (click)="add(header)"><span>{{newItem.$keywords}}</span></div>
+                </nz-option>
+                <ng-container *ngIf="newItem.$loading != 1">
+                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                </ng-container>
+                <nz-option *ngIf="newItem.$loading" nzDisabled nzCustomContent>
+                    <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
+                </nz-option>
+                <nz-option *ngIf="showCreate(header)" nzCustomContent>
+                    <div (click)="onCreate(header)">
+                        <i class="anticon anticon-plus"></i><span>添加</span>
+                    </div>
+                </nz-option>
+            </nz-select>
+
+            <span *ngSwitchDefault></span>
+
+            <i *ngIf="header.icon" [class]="header.icon" (click)="iconClick(header)"></i>
+        </td>
+        <td class="action"><i *ngIf="showAddIcon" class="icon-plus" (click)="add()"></i></td>
+    </tr>
+    </tbody>
+</table>

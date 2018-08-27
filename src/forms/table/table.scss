@@ -1,0 +1,139 @@
+:host {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    display: block;
+    overflow: auto;
+    border-radius: 4px;
+}
+
+/deep/ .ant-select-dropdown-menu {
+    max-height: 256px !important;
+}
+
+i {
+    cursor: pointer;
+    color: #1890ff;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+    th {
+        padding: 8px;
+        position: relative;
+        z-index: 1;
+        min-width: 64px;
+        background: #fafafa;
+        &:first-child {
+            width: 32px;
+            min-width: 32px;
+        }
+    }
+    td {
+        background-color: #FFFFFF;
+    }
+    th, td {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        border-left: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    th:first-child, td:first-child {
+        border-left: none;
+        text-align: center;
+    }
+    tr:last-child > td {
+        border-bottom: none;
+    }
+    tbody > tr:hover > td {
+        background-color: #e6f7ff;
+        transition: background-color 300ms;
+    }
+    .active > td {
+        background-color: #e6f7ff;
+    }
+
+    td {
+        padding: 4px;
+        position: relative;
+        & > span {
+            display: inline-block;
+            padding: 0 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+            height: 28px;
+            line-height: 28px;
+        }
+
+        & > input, & > nz-input-number, & > nz-select, & > nz-date-picker {
+            width: 100%;
+        }
+
+        & > input, & > nz-input-number, & > nz-select /deep/ > div, & > nz-date-picker /deep/ input {
+            // border: 0 none;
+            border-color: transparent;
+            border-radius: 0;
+        }
+    }
+    .has-icon {
+        padding-right: 36px;
+        & > i {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 32px;
+            font-size: 1.2em;
+            line-height: 40px;
+            text-align: center;
+        }
+    }
+
+    /deep/ .error {
+        & > td {
+            background-color: #F8E4E0;
+            .error-msg {
+                display: none;
+                position: absolute;
+                z-index: 10;
+                top: 48px;
+                white-space: nowrap;
+                box-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+                color: red;
+                &::before {
+                    content: '';
+                    display: block;
+                    width: 8px;
+                    height: 8px;
+                    top: -4px;
+                    left: 15px;
+                    transform: rotateZ(45deg);
+                    box-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+                    position: absolute;
+                    background-color: #fff;
+                }
+                & > div {
+                    padding: 4px;
+                    background-color: #fff;
+                    position: relative;
+                    p {
+                        margin-bottom: 4px;
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+            }
+        }
+        &:hover .error-msg {
+            display: block;
+        }
+    }
+
+    .action {
+        width: 48px;
+        min-width: 48px;
+        text-align: center
+    }
+}
