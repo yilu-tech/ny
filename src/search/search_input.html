@@ -1,0 +1,288 @@
+<div *ngIf="!isSimple && $collection.initialed" class="search-area">
+    <div class="input" [class.focus]="keywordFocus" (click)="keywordsInput.focus();keywordFocus = true">
+
+        <div class="key-item" *ngFor="let item of conditionLabels">
+            <span>{{item.label}}</span>
+            <i class="anticon anticon-close" (click)="check(item.items, false)"></i>
+        </div>
+
+        <input #keywordsInput type="text" [(ngModel)]="keyword" (keyup)="keywordChange($event)" (blur)="blur()"/>
+
+        <i class="anticon anticon-search" (click)="$collection.load()"></i>
+
+        <ul class="dropdown-menu" [class.show]="keyword && keywordFields.length">
+            <li *ngFor="let item of keywordFields; let i = index" [class.active]="i === kIndex" (mousedown)="addKeywordCondition(item)">{{item.label}}</li>
+        </ul>
+
+    </div>
+
+    <nz-button-group>
+        <button nz-button (click)="bindHiddenListener($event)">
+            <span>筛选</span>
+            <i class="anticon anticon-down"></i>
+        </button>
+        <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
+            <i class="anticon anticon-reload"></i>
+        </button>
+    </nz-button-group>
+
+    <ul class="dropdown-menu" [class.show]="dropDownVisible" (click)="$event.stopPropagation()">
+        <li class="menu-item" *ngFor="let groups of conditions; let i = index">
+            <div class="item-group" *ngFor="let condition of groups; let j = index" [class.checked]="condition.checked">
+                <span class="item-title" (click)="check(condition, !condition.checked)">{{condition.ctype === 'checkbox' ? condition.valueLabel : condition.label}}</span>
+
+                <span *ngIf="!condition.display"><i>{{op_cn[condition.operator]}}</i></span>
+
+                <div class="item-content" [ngSwitch]="condition.ctype">
+                    <nz-date-picker *ngSwitchCase="'date'"
+                                    [(ngModel)]="condition.value"
+                                    (ngModelChange)="valueChange(condition, false)"
+                                    [nzDisabledDate]="condition.range"
+                                    (nzOnOpenChange)="selectStatusChange($event)">
+                    </nz-date-picker>
+
+                    <nz-range-picker *ngSwitchCase="'date-in'"
+                                     [(ngModel)]="condition.value"
+                                     (ngModelChange)="valueChange(condition, false)"
+                                     [nzDisabledDate]="condition.range"
+                                     (nzOnOpenChange)="selectStatusChange($event)">
+                    </nz-range-picker>
+
+                    <nz-time-picker *ngSwitchCase="'time'"
+                                    [(ngModel)]="condition.value"
+                                    (ngModelChange)="valueChange(condition, false)"
+                                    (nzOpenChange)="selectStatusChange($event)">
+                    </nz-time-picker>
+
+                    <nz-time-picker *ngSwitchCase="'time-in'"
+                                    [(ngModel)]="condition.value[0]"
+                                    (ngModelChange)="valueChange(condition, false)"
+                                    (nzOpenChange)="selectStatusChange($event)">
+                    </nz-time-picker>
+                    <span *ngSwitchCase="'time-in'" class="connector">~</span>
+                    <nz-time-picker *ngSwitchCase="'time-in'"
+                                    [(ngModel)]="condition.value[1]"
+                                    (ngModelChange)="valueChange(condition, false)"
+                                    (nzOpenChange)="selectStatusChange($event)">
+                    </nz-time-picker>
+
+                    <nz-select *ngSwitchCase="'select'"
+                               [(ngModel)]="condition.value"
+                               (ngModelChange)="valueChange(condition, false)"
+                               [nzMode]="condition.selectModel"
+                               [nzDropdownMatchSelectWidth]="false"
+                               (nzOpenChange)="selectStatusChange($event)">
+                        <nz-option *ngFor="let option of condition.options" [nzLabel]="option.label" [nzValue]="option.value">{{option.label}}</nz-option>
+                    </nz-select>
+
+                    <nz-tree-select *ngSwitchCase="'tree-select'"
+                                    [(ngModel)]="condition.value"
+                                    [nzNodes]="condition.options"
+                                    [nzAllowClear]="false"
+                                    [nzAsyncData]="true"
+                                    (ngModelChange)="valueChange(condition, false)"
+                                    (nzExpandChange)="condition.childNodes && condition.childNodes($event)"
+                                    (nzOpenChange)="selectStatusChange($event)"
+                                    [nzDropdownMatchSelectWidth]="false"
+                                    [nzDropdownStyle]="{'max-height': '260px', 'min-width': '200px'}">
+                    </nz-tree-select>
+
+                    <span *ngSwitchCase="'checkbox'"></span>
+
+                    <div *ngSwitchDefault>"{{condition.valueLabel || condition.value}}"</div>
+                </div>
+                <i class="anticon anticon-delete right" *ngIf="!condition.display" (click)="removeCondition(j, i)"></i>
+            </div>
+        </li>
+
+        <li class="menu-item edit-item" *ngIf="showExtraCondition">
+            <i class="anticon left" [class.anticon-caret-right]="!editConditions.length" [class.anticon-caret-down]="editConditions.length"></i>
+            <span (click)="startEditCondition()" style="padding: 4px; display: inline-block; cursor: pointer">添加自定义筛选</span>
+        </li>
+
+        <li *ngFor="let condition of editConditions; let index = index" class="menu-item edit-item item-group">
+            <span class="left" *ngIf="index > 0">或</span>
+
+            <nz-select style="width: 128px;"
+                       [nzShowSearch]="true"
+                       [(ngModel)]="condition.name"
+                       [nzDropdownMatchSelectWidth]="false"
+                       (ngModelChange)="filedChange(index, $event)"
+                       (nzOpenChange)="selectStatusChange($event)">
+                <nz-option *ngFor="let item of fields" [nzLabel]="item.label" [nzValue]="item.name"></nz-option>
+            </nz-select>
+
+            <nz-select style="width: 100px;"
+                       [(ngModel)]="condition.operator"
+                       (ngModelChange)="operatorChange(index, $event)"
+                       [nzDropdownMatchSelectWidth]="false"
+                       (nzOpenChange)="selectStatusChange($event)">
+                <nz-option *ngFor="let item of operators[index]" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+
+            <div class="item-content" [ngSwitch]="condition.ctype">
+
+                <nz-input-number *ngSwitchCase="'numeric'"
+                                 [(ngModel)]="condition.value"
+                                 (ngModelChange)="valueChange(condition)"
+                                 [nzMin]="condition.range[0]"
+                                 [nzMax]="condition.range[1]">
+                </nz-input-number>
+
+                <nz-input-number *ngSwitchCase="'numeric-in'"
+                                 [(ngModel)]="condition.value[0]"
+                                 (ngModelChange)="valueChange(condition)"
+                                 [nzMin]="condition.range[0]"
+                                 [nzMax]="condition.value[1]">
+                </nz-input-number>
+                <span *ngSwitchCase="'numeric-in'" class="connector">~</span>
+                <nz-input-number *ngSwitchCase="'numeric-in'"
+                                 [(ngModel)]="condition.value[1]"
+                                 (ngModelChange)="valueChange(condition)"
+                                 [nzMin]="condition.value[0]"
+                                 [nzMax]="condition.range[1]">
+                </nz-input-number>
+
+                <nz-date-picker *ngSwitchCase="'date'"
+                                [(ngModel)]="condition.value"
+                                (ngModelChange)="valueChange(condition)"
+                                [nzDisabledDate]="condition.range"
+                                (nzOnOpenChange)="selectStatusChange($event)">
+                </nz-date-picker>
+                <nz-range-picker *ngSwitchCase="'date-in'"
+                                 [(ngModel)]="condition.value"
+                                 (ngModelChange)="valueChange(condition)"
+                                 [nzDisabledDate]="condition.range"
+                                 (nzOnOpenChange)="selectStatusChange($event)">
+                </nz-range-picker>
+
+                <nz-time-picker *ngSwitchCase="'time'"
+                                [(ngModel)]="condition.value"
+                                (ngModelChange)="valueChange(condition)"
+                                (nzOpenChange)="selectStatusChange($event)">
+                </nz-time-picker>
+
+                <nz-time-picker *ngSwitchCase="'time-in'"
+                                [(ngModel)]="condition.value[0]"
+                                (ngModelChange)="valueChange(condition)"
+                                (nzOpenChange)="selectStatusChange($event)">
+                </nz-time-picker>
+                <span *ngSwitchCase="'time-in'" class="connector">~</span>
+                <nz-time-picker *ngSwitchCase="'time-in'"
+                                [(ngModel)]="condition.value[1]"
+                                (ngModelChange)="valueChange(condition)"
+                                (nzOpenChange)="selectStatusChange($event)">
+                </nz-time-picker>
+
+                <nz-select *ngSwitchCase="'select'"
+                           [(ngModel)]="condition.value"
+                           (ngModelChange)="valueChange(condition)"
+                           [nzMode]="condition.selectModel"
+                           [nzDropdownMatchSelectWidth]="false"
+                           (nzOpenChange)="selectStatusChange($event)">
+                    <nz-option *ngFor="let option of condition.options"
+                               [nzLabel]="option.label"
+                               [nzValue]="option.value">{{option.label}}
+                    </nz-option>
+                </nz-select>
+
+                <nz-tree-select *ngSwitchCase="'tree-select'"
+                                [(ngModel)]="condition.value"
+                                [nzNodes]="condition.options"
+                                [nzAsyncData]="true"
+                                (ngModelChange)="valueChange(condition)"
+                                (nzExpandChange)="condition.childNodes && condition.childNodes($event)"
+                                (nzOpenChange)="selectStatusChange($event)"
+                                [nzDropdownMatchSelectWidth]="false"
+                                [nzDropdownStyle]="{'max-height': '260px', 'min-width': '200px'}">
+                </nz-tree-select>
+
+                <input *ngSwitchDefault nz-input [(ngModel)]="condition.value" (ngModelChange)="valueChange(condition)"/>
+            </div>
+            <i class="anticon anticon-delete right" (click)="removeCondition(index)"></i>
+        </li>
+
+        <li class="menu-item deit-item btn-item-group" *ngIf="editConditions.length">
+            <button nz-button [nzSize]="'small'" (click)="addEditCondition()">添加条件</button>
+            <button nz-button [nzSize]="'small'" (click)="apply()">应用</button>
+        </li>
+    </ul>
+</div>
+<ng-container *ngIf="isSimple && $collection.initialed">
+    <div class="control" *ngFor="let item of conditions">
+
+        <label>{{item[0].label}}</label>
+
+        <ng-container [ngSwitch]="item[0].ctype">
+
+            <label *ngSwitchCase="'checkbox'" nz-checkbox [(ngModel)]="item[0].value" (ngModelChange)="reduceValueChange(item[0])">{{item[0].label}}</label>
+
+            <nz-input-number *ngSwitchCase="'numeric'"
+                             [(ngModel)]="item[0].value"
+                             (ngModelChange)="reduceValueChange(item[0])"
+                             [nzMin]="item[0].range[0]"
+                             [nzMax]="item[0].range[1]">
+            </nz-input-number>
+
+            <nz-input-number *ngSwitchCase="'numeric-in'"
+                             [(ngModel)]="item[0].value[0]"
+                             (ngModelChange)="reduceValueChange(item[0])"
+                             [nzMin]="item[0].range[0]"
+                             [nzMax]="item[0].value[1]">
+            </nz-input-number>
+            <span *ngSwitchCase="'numeric-in'" class="connector">~</span>
+            <nz-input-number *ngSwitchCase="'numeric-in'"
+                             [(ngModel)]="item[0].value[1]"
+                             (ngModelChange)="reduceValueChange(item[0])"
+                             [nzMin]="item[0].value[0]"
+                             [nzMax]="item[0].range[1]">
+            </nz-input-number>
+
+            <nz-date-picker *ngSwitchCase="'date'"
+                            [(ngModel)]="item[0].value"
+                            (ngModelChange)="valueChange(item[0])"
+                            [nzDisabledDate]="item[0].range"
+                            (nzOnOpenChange)="selectStatusChange($event)">
+            </nz-date-picker>
+            <nz-range-picker *ngSwitchCase="'date-in'"
+                             [(ngModel)]="item[0].value"
+                             (ngModelChange)="valueChange(item[0])"
+                             [nzDisabledDate]="item[0].range"
+                             (nzOnOpenChange)="selectStatusChange($event)">
+            </nz-range-picker>
+
+            <nz-time-picker *ngSwitchCase="'time'"
+                            [(ngModel)]="item[0].value"
+                            (ngModelChange)="valueChange(item[0])"
+                            (nzOpenChange)="selectStatusChange($event)">
+            </nz-time-picker>
+
+            <nz-time-picker *ngSwitchCase="'time-in'"
+                            [(ngModel)]="item[0].value[0]"
+                            (ngModelChange)="valueChange(item[0])"
+                            (nzOpenChange)="selectStatusChange($event)">
+            </nz-time-picker>
+            <span *ngSwitchCase="'time-in'" class="connector">~</span>
+            <nz-time-picker *ngSwitchCase="'time-in'"
+                            [(ngModel)]="item[0].value[1]"
+                            (ngModelChange)="valueChange(item[0])"
+                            (nzOpenChange)="selectStatusChange($event)">
+            </nz-time-picker>
+
+            <nz-select *ngSwitchCase="'select'"
+                       [(ngModel)]="item[0].value"
+                       (ngModelChange)="valueChange(item[0])"
+                       [nzMode]="item[0].selectModel"
+                       [nzDropdownMatchSelectWidth]="false"
+                       [nzAllowClear]="true">
+                <nz-option *ngFor="let option of item[0].options" [nzLabel]="option.label" [nzValue]="option.value">{{option.label}}</nz-option>
+            </nz-select>
+
+            <input *ngSwitchDefault nz-input [(ngModel)]="item[0].value" (ngModelChange)="reduceValueChange(item[0])"/>
+
+        </ng-container>
+    </div>
+    <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
+        <span>搜索</span>
+    </button>
+</ng-container>

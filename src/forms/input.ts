@@ -15,7 +15,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DefaultValueAccessor } from './default_value_accessor';
 import { NyFormDirective } from './form';
 import { NyGroupDirective } from './group';
-import { date, number } from '../utils';
+import { date, number } from './utils';
 
 function selectValueAccessor(valueAccessors: ControlValueAccessor[]): ControlValueAccessor | null {
     if (!valueAccessors) return null;

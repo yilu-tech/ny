@@ -17,7 +17,7 @@ import {
 
 import { NyFormDirective } from '../form';
 import { NyGroupDirective } from '../group';
-import { date, number } from '../../utils';
+import { date, number } from '../utils';
 
 @Component({
     selector: 'ny-table-input',
