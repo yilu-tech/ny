@@ -176,8 +176,9 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
     }
 
     public change(header: any, item?: any, change?: any) {
-        if (header.onChange && header.onChange(item || this.newItem, header, !item, change)) {
-            setTimeout(() => this.newItem = {$open: {}});
+        let _item = item || this.newItem;
+        if (header.onChange && header.onChange(_item, header, !item, change)) {
+            setTimeout(() => this.newItem = {$open: {}, $currPage: _item.$currPage, $lastPage: _item.$lastPage});
         }
     }
 
@@ -212,6 +213,10 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
     }
 
     public batchOperate(header, value) {
+        if (header.setBatch) {
+            header.setBatch(value);
+            return;
+        }
         this.data.forEach((item) => {
             item[header.key] = value;
         });
