@@ -190,7 +190,7 @@ export class Collection {
         let options: any = {
             action: 'query',
             params: [...this.params],
-            fields: this.headers.map((header) => header.field),
+            fields: this.headers.filter((_) => !_.custom).map((header) => header.field),
             orderBy: this.orderBy,
             groupBy: this.groupBy
         };
