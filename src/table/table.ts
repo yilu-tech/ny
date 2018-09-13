@@ -3,14 +3,14 @@ import { Component, OnChanges, AfterViewChecked, Input, ViewChildren, ViewChild,
 @Component({
     selector: 'ny-table',
     styleUrls: ['./table.scss'],
-    templateUrl: './table.html',
-    host: {class: ' ant-spin-nested-loading'}
+    templateUrl: './table.html'
 })
 export class NyTable implements OnChanges, AfterViewChecked {
     @Input() collection: any = {data: []};
     @Input() showIndex: boolean;
 
     @ViewChild('Scroll') public scrollEl: ElementRef;
+    @ViewChild('THEAD') public theadEl: ElementRef;
     @ViewChildren('TH') public thEls: QueryList<HTMLElement>;
     @ViewChildren('LH') public lhEls: QueryList<HTMLElement>;
 
@@ -27,7 +27,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
     }
 
     public ngAfterViewChecked() {
-        this.recoveryScroll();
+        this.thEls.forEach((item, index) => {
+            this.theadEl.nativeElement.children[index].style.width = item['el'].clientWidth + 'px';
+        });
     }
 
     public index(row: number) {
@@ -35,27 +37,12 @@ export class NyTable implements OnChanges, AfterViewChecked {
     }
 
     public onScroll() {
-        if (this.scroll.x !== this.scrollEl.nativeElement.scrollLeft) {
-            this.scroll.x = this.scrollEl.nativeElement.scrollLeft;
-            this.lhEls.forEach((th) => {
-                this._renderer.setStyle(th['el'], 'left', this.scroll.x + 'px');
-            });
-        }
-        if (this.scroll.y !== this.scrollEl.nativeElement.scrollTop) {
-            this.scroll.y = this.scrollEl.nativeElement.scrollTop;
-            this.thEls.forEach((th) => {
-                this._renderer.setStyle(th['el'], 'top', this.scroll.y + 'px');
-            });
-        }
-    }
-
-    public recoveryScroll() {
-        if (this.scroll.x && !this.scrollEl.nativeElement.scrollLeft) {
-            this.scrollEl.nativeElement.scrollLeft = this.scroll.x;
-        }
-        if (this.scroll.y && !this.scrollEl.nativeElement.scrollTop) {
-            this.scrollEl.nativeElement.scrollTop = this.scroll.y;
-        }
+        this.scroll.x = this.scrollEl.nativeElement.scrollLeft;
+        this.scroll.y = this.scrollEl.nativeElement.scrollTop;
+        this.theadEl.nativeElement.scrollLeft = this.scroll.x;
+        this.lhEls.forEach((th) => {
+            this._renderer.setStyle(th['el'], 'left', this.scroll.x + 'px');
+        });
     }
 
     public toString(value, item?: any) {
