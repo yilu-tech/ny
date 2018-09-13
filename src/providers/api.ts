@@ -154,7 +154,8 @@ export class Api {
     }
 
     private _setUrlHandler(request: any): void {
-        if (!request.url.match(/([\w-]+\.)*[\w]+\.[\w]+/)) {
+        if (/^\/?([\w-]+\/?)+$/.test(request.url)) {
+            request.url = request.url.trim('/');
             request.url = CONFIG.baseUrl + '/' + request.url;
         }
     }
