@@ -171,7 +171,16 @@ export class SearchInput implements OnChanges, OnInit {
             } else {
                 if (!item.custom) this.fields.push(item);
                 if (item.ctype === 'tree-select' && item.childNodes) {
-                    item.map = item.childNodes().then((nodes) => item.options = nodes);
+                    item.map = item.childNodes().then((nodes) =>{
+                        // item.options = nodes;
+                        this.conditions.forEach(collection => {
+                            collection.forEach(_ => {
+                                if ( _.name.indexOf(item.name) != -1) {
+                                    _.options = nodes;
+                                }
+                            })
+                        })
+                    });
                 }
                 if (item.display) {
                     this.conditions.push([this.makeCondition(item, item.value)]);
