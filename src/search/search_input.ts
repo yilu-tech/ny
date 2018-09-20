@@ -182,7 +182,7 @@ export class SearchInput implements OnChanges, OnInit {
                     });
                 }
                 if (item.display) {
-                    this.conditions.push([this.makeCondition(item, item.value)]);
+                    this.conditions.push([this.makeCondition(item, item.value, item.operator || "=")]);
                 }
                 if (item.itype === 'string') {
                     this.keywordFields.push(item);
