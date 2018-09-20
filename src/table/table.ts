@@ -30,9 +30,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     public ngAfterViewChecked() {
         this.thEls.forEach((item, index) => {
-            this.thrEls.forEach((tr)=> {
+            this.thrEls.forEach((tr) => {
                 tr.nativeElement.children[index].style.width = item['el'].clientWidth + 'px';
-            })
+            });
         });
     }
 
@@ -91,9 +91,15 @@ export class NyTable implements OnChanges, AfterViewChecked {
         }
     }
 
-    public checkAll(value: boolean): void {
-        this.collection.data.forEach(data => data.$checked = value);
-        this.refreshStatus();
+    public check(item?: any) {
+        if (!item) {
+            this.collection.data.forEach(data => data.$checked = this.allChecked);
+        }
+        this.refreshStatus(item);
+
+        if (this.collection.onChecked) {
+            this.collection.onChecked(item, this.collection.checkedItems);
+        }
     }
 
     public sort(key, status: string) {

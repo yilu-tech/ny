@@ -38,6 +38,7 @@
         border-right: 1px solid #EEEEEE;
         white-space: nowrap;
         text-overflow: ellipsis;
+        overflow: hidden;
         min-height: 38px;
         &:last-child {
             border-right: none;

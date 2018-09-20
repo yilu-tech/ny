@@ -3,7 +3,7 @@ import { Export, value } from './utils';
 export interface Collection {
     onInit?: Function;
     onLoad?: Function;
-    onLoaded?: Function;
+    onExportLoad?: Function;
     onChange?: Function;
     onSetHeader?: Function;
     addWhere?: Function;
@@ -50,8 +50,21 @@ export class Collection {
 
     public responseTime: Date;
 
+    public set onLoaded(fn: Function) {
+        if (fn === null) {
+            this._onLoaded = [];
+        } else if (typeof fn === 'function' && this._onLoaded.indexOf(fn) < 0) {
+            this._onLoaded.push(fn);
+        }
+    }
+
+    public get onLoaded(): Function {
+        return (...argv) => this._onLoaded.forEach((fn) => fn(...argv));
+    }
+
     private _page: number;
     private _size: number;
+    private _onLoaded: Array<Function> = [];
 
     constructor() {
         this.data = [];
@@ -117,7 +130,7 @@ export class Collection {
         if (isLocal) {
             if (type === 'all') {
                 let options = this.makeOptions();
-                if (this.onLoad) this.onLoad(options);
+                if (this.onExportLoad) this.onExportLoad(options);
                 delete options.size;
                 this.request('post', this.uri, {body: options}).then((ret) => {
                     _export.local(ret, this.headers);

@@ -6,7 +6,7 @@
             nzShowCheckbox
             [(nzChecked)]="allChecked"
             [nzIndeterminate]="indeterminate"
-            (nzCheckedChange)="checkAll($event)"></th>
+            (nzCheckedChange)="check()"></th>
         <th class="th" #TTH
             *ngFor="let header of collection.headers"
             [style.width]="toString(header.width)"
@@ -34,7 +34,7 @@
                 (click)="click(item)" (dblclick)="dblClick(item)">
                 <td #LH *ngIf="showIndex" class="header">{{index(row)}}</td>
                 <td *ngIf="collection.showCheckbox" nzShowCheckbox [(nzChecked)]="item.$checked"
-                    (nzCheckedChange)="refreshStatus(item)"></td>
+                    (nzCheckedChange)="check(item)"></td>
                 <td *ngFor="let header of collection.headers" [style.color]="color(item, header)">
                     <a href="javascript:" *ngIf="header.click" (click)="header.click(item, header)">{{collection.getValue(item, header)}}</a>
                     <ng-container *ngIf="!header.click"> {{collection.getValue(item, header)}}</ng-container>
