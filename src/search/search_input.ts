@@ -112,7 +112,6 @@ export class SearchInput implements OnChanges, OnInit {
         };
         this.$collection.resetHeader = () => this.initControls(false);
         this.initControls();
-        console.log(this);
     }
 
     public initControls(inCache = true) {

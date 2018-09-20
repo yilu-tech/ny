@@ -26,7 +26,6 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     public ngOnChanges(changes) {
         this.collection.onLoaded = () => this.refreshStatus();
-        console.log(this);
     }
 
     public ngAfterViewChecked() {
