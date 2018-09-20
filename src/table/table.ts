@@ -6,13 +6,15 @@ import { Component, OnChanges, AfterViewChecked, Input, ViewChildren, ViewChild,
     templateUrl: './table.html'
 })
 export class NyTable implements OnChanges, AfterViewChecked {
-    @Input() collection: any = {data: []};
+    @Input() collection: any = {data: [], footers: []};
     @Input() showIndex: boolean;
 
     @ViewChild('Scroll') public scrollEl: ElementRef;
     @ViewChild('THEAD') public theadEl: ElementRef;
+    @ViewChild('TFOOT') public tfootEl: ElementRef;
     @ViewChildren('TH') public thEls: QueryList<HTMLElement>;
     @ViewChildren('LH') public lhEls: QueryList<HTMLElement>;
+    @ViewChildren('THR') public thrEls: QueryList<ElementRef>;
 
     public scroll = {x: 0, y: 0};
     public allChecked = false;
@@ -24,11 +26,14 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     public ngOnChanges(changes) {
         this.collection.onLoaded = () => this.refreshStatus();
+        console.log(this);
     }
 
     public ngAfterViewChecked() {
         this.thEls.forEach((item, index) => {
-            this.theadEl.nativeElement.children[index].style.width = item['el'].clientWidth + 'px';
+            this.thrEls.forEach((tr)=> {
+                tr.nativeElement.children[index].style.width = item['el'].clientWidth + 'px';
+            })
         });
     }
 

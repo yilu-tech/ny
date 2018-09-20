@@ -32,7 +32,9 @@ export class Collection {
 
     public request: Request;
 
-    public headers: Array<any>;
+    public headers: Array<any> = [];
+
+    public footers: Array<any> = [];
 
     public params: Array<Array<any>>;
 
@@ -183,7 +185,21 @@ export class Collection {
             this._page = data.current_page || 1;
             this.total = data.total || this.data.length;
             this.pageTotal = data.last_page || 1;
+            if (data.footer) this.setFooter(data.footer);
         }
+    }
+
+    public setFooter(footers: Array<any>) {
+        this.footers = footers.map((item) => {
+            let row = [];
+            for (let attr in item) {
+                let index = this.headers.indexOf(this.getHeader(attr));
+                if (index >= 0) {
+                    row[index] = item[attr];
+                }
+            }
+            return row;
+        });
     }
 
     public makeOptions() {

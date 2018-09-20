@@ -1,17 +1,19 @@
 <div class="thead" #THEAD>
-    <th class="th lh" #TTH #LH *ngIf="showIndex">#</th>
-    <th class="th" #TTH
-        *ngIf="collection.showCheckbox"
-        nzShowCheckbox
-        [(nzChecked)]="allChecked"
-        [nzIndeterminate]="indeterminate"
-        (nzCheckedChange)="checkAll($event)"></th>
-    <th class="th" #TTH
-        *ngFor="let header of collection.headers"
-        [style.width]="toString(header.width)"
-        [nzShowSort]="header.allowSort"
-        (nzSortChange)="sort(header.value, $event)">{{header.label}}
-    </th>
+    <div #THR class="tr">
+        <th class="th lh" #TTH #LH *ngIf="showIndex">#</th>
+        <th class="th" #TTH
+            *ngIf="collection.showCheckbox"
+            nzShowCheckbox
+            [(nzChecked)]="allChecked"
+            [nzIndeterminate]="indeterminate"
+            (nzCheckedChange)="checkAll($event)"></th>
+        <th class="th" #TTH
+            *ngFor="let header of collection.headers"
+            [style.width]="toString(header.width)"
+            [nzShowSort]="header.allowSort"
+            (nzSortChange)="sort(header.value, $event)">{{header.label}}
+        </th>
+    </div>
 </div>
 <div class="body ant-spin-nested-loading">
     <div #Scroll class="scroll-area" (scroll)="onScroll()">
@@ -46,5 +48,12 @@
             <span class="ant-spin-dot ant-spin-dot-spin"><i></i><i></i><i></i><i></i></span>
             <div class="ant-spin-text">Loading...</div>
         </div>
+    </div>
+</div>
+<div class="tfoot" #TFOOT *ngIf="collection.footers.length">
+    <div #THR class="tr" *ngFor="let item of collection.footers; let row = index">
+        <th class="th lh" #LH *ngIf="showIndex">Σ</th>
+        <th class="th" *ngIf="collection.showCheckbox"></th>
+        <th class="th" *ngFor="let header of collection.headers; let col = index">{{item[col]}}</th>
     </div>
 </div>
