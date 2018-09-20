@@ -35,7 +35,10 @@
                 <td #LH *ngIf="showIndex" class="header">{{index(row)}}</td>
                 <td *ngIf="collection.showCheckbox" nzShowCheckbox [(nzChecked)]="item.$checked"
                     (nzCheckedChange)="check(item)"></td>
-                <td *ngFor="let header of collection.headers" [style.color]="color(item, header)">
+                <td *ngFor="let header of collection.headers" [style.color]="color(item, header)"
+                    [style.width]="toString(header.width)"
+                    [style.minWidth]="toString(header.minWidth)"
+                    [style.maxWidth]="toString(header.maxWidth)">
                     <a href="javascript:" *ngIf="header.click" (click)="header.click(item, header)">{{collection.getValue(item, header)}}</a>
                     <ng-container *ngIf="!header.click"> {{collection.getValue(item, header)}}</ng-container>
                 </td>
