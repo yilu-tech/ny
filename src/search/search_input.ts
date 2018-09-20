@@ -297,7 +297,7 @@ export class SearchInput implements OnChanges, OnInit {
             }
         });
         this.$collection.params = params;
-        this.$collection.load();
+        this.$collection.change('condition');
     }
 
     public value(condition: Condition) {
