@@ -469,7 +469,7 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     private isEmpty(condition: Condition) {
-        if (condition.ctype === 'select') {
+        if (condition.ctype === 'select' || condition.ctype === 'tree-select') {
             if (condition.selectModel !== 'multiple') {
                 return condition.value === undefined || condition.value === null;
             }
