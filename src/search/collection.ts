@@ -124,20 +124,23 @@ export class Collection {
         if (!this.pending) this.load();
     }
 
-    public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', isLocal = true, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {
+    public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', isLocal = true, headers: Array<any> = null, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {
         let _export = new Export(filename, filetype);
+
+        headers = headers || this.headers;
 
         if (isLocal) {
             if (type === 'all') {
                 let options = this.makeOptions();
+                options.fiedls = this.headers.map((item) => item.value);
                 if (this.onExportLoad) this.onExportLoad(options);
                 delete options.size;
                 this.request('post', this.uri, {body: options}).then((ret) => {
-                    _export.local(ret, this.headers);
+                    _export.local(ret, headers);
                 });
             }
-            if (type === 'page') _export.local(this.data, this.headers);
-            if (type === 'checked') _export.local(this.checkedItems, this.headers);
+            if (type === 'page') _export.local(this.data, headers);
+            if (type === 'checked') _export.local(this.checkedItems, headers);
         } else {
             _export.server();
         }
