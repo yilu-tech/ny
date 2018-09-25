@@ -29,11 +29,7 @@ export class Export {
         this.filename = filename + '.' + type;
     }
 
-    public server(): void {
-
-    }
-
-    public local(data: Array<any>, headers: Array<any>, title?: string): void {
+    public write(data: Array<any>, headers: Array<any>, title?: string): void {
         let aoa = this._toAoa(data, headers);
         if (title) aoa.unshift([title]);
 
@@ -46,6 +42,17 @@ export class Export {
         const wbout = write(wb, {bookType: this.type, type: 'binary'});
 
         this._saveAs(new Blob([this._s2ab(wbout)]), this.filename);
+    }
+
+    public static downloadUrl(url: string, filename?: string) {
+        let link = document.createElement('a');
+        link.href = url;
+        if (filename) {
+            link.download = filename;
+        }
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     private _toAoa(data: Array<any>, headers: Array<any>) {
@@ -66,15 +73,13 @@ export class Export {
         return buff;
     }
 
-    private _saveAs(data: Blob, fileName: string): void {
+    private _saveAs(data: Blob, filename: string): void {
         if (window.navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(data, fileName);
+            navigator.msSaveBlob(data, filename);
         } else {
-            let link = document.createElement('a');
-            link.download = fileName;
-            link.href = window.URL.createObjectURL(data);
-            link.click();
-            window.URL.revokeObjectURL(link.href);
+            let url = window.URL.createObjectURL(data);
+            Export.downloadUrl(url, filename);
+            window.URL.revokeObjectURL(url);
         }
     }
 }

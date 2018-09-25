@@ -124,26 +124,45 @@ export class Collection {
         if (!this.pending) this.load();
     }
 
-    public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', isLocal = true, headers: Array<any> = null, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {
+    public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', headers: Array<any> = null, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {
         let _export = new Export(filename, filetype);
 
         headers = headers || this.headers;
 
-        if (isLocal) {
-            if (type === 'all') {
-                let options = this.makeOptions();
-                options.fiedls = this.headers.map((item) => item.value);
-                if (this.onExportLoad) this.onExportLoad(options);
-                delete options.size;
-                this.request('post', this.uri, {body: options}).then((ret) => {
-                    _export.local(ret, headers);
-                });
-            }
-            if (type === 'page') _export.local(this.data, headers);
-            if (type === 'checked') _export.local(this.checkedItems, headers);
-        } else {
-            _export.server();
+        if (type === 'all') {
+            let body = this.makeOptions();
+            body.fiedls = this.headers.map((item) => item.field || item.value);
+            body.extras = {type};
+            if (this.onExportLoad) this.onExportLoad(body);
+            delete body.size;
+            this.request('post', this.uri, {body: body}).then((ret) => {
+                _export.write(ret, headers);
+            });
         }
+        if (type === 'page') _export.write(this.data, headers);
+
+        if (type === 'checked') _export.write(this.checkedItems, headers);
+    }
+
+    public serverExport(filename?: string, type: 'all' | 'page' | 'checked' = 'all', extras: any = {}, headers: Array<any> = null, filetype: 'xls' | 'csv' = 'xls'): Promise<string> {
+
+        headers = headers || this.headers;
+
+        let body = this.makeOptions();
+        body.action = 'export';
+        body.extras = {filetype, filename, type, ...extras};
+        body.fields = {};
+        headers.forEach((item) => {
+            body.fields[item.field || item.value] = item.label;
+        });
+
+        if (type !== 'page') {
+            delete body.size;
+        }
+
+        if (this.onExportLoad) this.onExportLoad(body);
+
+        return this.request('post', this.uri, {body}).then((code) => 'export?t=' + code);
     }
 
     public setHeader(headers) {
@@ -218,11 +237,12 @@ export class Collection {
         });
     }
 
-    public makeOptions() {
+    public makeOptions(headers?: Array<any>) {
+        headers = headers || this.headers;
         let options: any = {
             action: 'query',
             params: [...this.params],
-            fields: this.headers.filter((_) => !_.custom).map((header) => header.field),
+            fields: headers.filter((_) => !_.custom).map((header) => header.field),
             orderBy: this.orderBy,
             groupBy: this.groupBy
         };
