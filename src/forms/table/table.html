@@ -20,8 +20,8 @@
                 <i class="anticon anticon-filter ant-table-filter-icon" nz-dropdown></i>
 
                 <div class="filter-dropdown">
-                    <input type="text" nz-input placeholder="Search name" [nzSize]="'small'" [(ngModel)]="searcher">
-                    <button nz-button [nzType]="'primary'" [nzSize]="'small'" (click)="sort(header)">Search</button>
+                    <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="searcher">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'small'" (click)="sort(header)">搜索</button>
                 </div>
             </nz-dropdown>
         </th>
