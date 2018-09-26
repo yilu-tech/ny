@@ -100,7 +100,6 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
                 }
             });
         }
-        console.log(this);
     }
 
     public ngOnInit() {
