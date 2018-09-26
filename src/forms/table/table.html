@@ -2,12 +2,27 @@
     <thead>
     <tr>
         <th #TH>#</th>
-        <th #TH *ngFor="let header of headers" [style.width]="header.width" [style.minWidth]="header.minWidth" [style.maxWidth]="header.maxWidth">{{header.label}}
+        <th #TH *ngFor="let header of headers"
+            [style.width]="header.width"
+            [style.minWidth]="header.minWidth"
+            [style.maxWidth]="header.maxWidth">
+            {{header.label}}
             <nz-dropdown [nzTrigger]="'click'" *ngIf="header.allowBatch">
                 <i nz-dropdown class="icon-edit"></i>
                 <ul nz-menu style="max-height: 300px;overflow:auto;">
                     <li nz-menu-item *ngFor="let item of header.options" (click)="batchOperate(header, item.value)">{{item.label}}</li>
                 </ul>
+            </nz-dropdown>
+
+            <nz-dropdown *ngIf="header.showFilter" nzTrigger="click" [nzClickHide]="false"
+                         [(nzVisible)]="header.$filterVisible"
+                         (nzVisibleChange)="onFilterDropdownChange($event, header)">
+                <i class="anticon anticon-filter ant-table-filter-icon" nz-dropdown></i>
+
+                <div class="filter-dropdown">
+                    <input type="text" nz-input placeholder="Search name" [nzSize]="'small'" [(ngModel)]="searcher">
+                    <button nz-button [nzType]="'primary'" [nzSize]="'small'" (click)="sort(header)">Search</button>
+                </div>
             </nz-dropdown>
         </th>
         <th #TH *ngIf="!disabled" class="action">操作</th>
@@ -24,6 +39,7 @@
             </div>
         </td>
         <td *ngFor="let header of headers" [class.has-icon]="header.icon && !isDisabled(header, item)" [ngSwitch]="isDisabled(header, item) ? '' : header.type">
+
             <input *ngSwitchCase="'string'" type="text" nz-input (focus)="focus(header, item)" (blur)="blur(header, item)"
                    [nyDeepName]="header.key" errorStyle="float" [replace]="toString(header.replace, item)" (onChange)="change(header, item, $event)">
 
@@ -52,7 +68,7 @@
             <nz-date-picker *ngSwitchCase="'date'" [nyDeepName]="header.key"
                             errorStyle="float" [format]="toString(header.format, item)" (onChange)="change(header, item, $event)"></nz-date-picker>
 
-            <span *ngSwitchDefault>{{value(item, header)}}</span>
+            <span *ngSwitchDefault [innerHTML]="value(item, header, header.$searcher)"></span>
 
             <i *ngIf="header.icon && !isDisabled(header, item)" [class]="header.icon" (click)="iconClick(header)"></i>
         </td>

@@ -41,6 +41,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
     public newItem: any = {$open: {}};
     public activeRow: any[] = [];
     public scroll = {x: 0, y: 0};
+    public searcher: string;
     private _timer: any;
 
     constructor(@Optional() @Host() public form: NyFormDirective,
@@ -99,6 +100,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
                 }
             });
         }
+        console.log(this);
     }
 
     public ngOnInit() {
@@ -250,19 +252,41 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
         if (this.form) this.form.setValue(this.path(), [...this.data], {viewChanged: true});
     }
 
-    public value(item: any, header: any) {
+    public value(item: any, header: any, replace = false) {
         let value: any = item[header.key];
-        if ('options' in header) {
-            for (let item of header.options) {
-                if (item.value == value) return item.label;
-            }
-        }
         if ('replace' in header) {
             value = item[header.replace] || value;
+        } else if ('options' in header) {
+            let option = header.options.find((_) => _.value == value);
+            if (option) {
+                value = item.label;
+            }
         } else if ('format' in header) {
             value = this._formatter(value, this.toString(header.format, item));
         }
+        if (typeof value === 'number') {
+            value = value.toString();
+        }
+        if (replace) {
+            value = value.replace(header.$searcher, '<span class="searcher">' + header.$searcher + '</span>');
+        }
         return value;
+    }
+
+    public sort(header) {
+        header.$searcher = this.searcher;
+        this.data = this.data.sort((a, b) => {
+            let av = this.value(a, header);
+            let bv = this.value(b, header);
+
+            if (!av || !bv) return 1;
+
+            let ai = av.indexOf(header.$searcher);
+            let bi = bv.indexOf(header.$searcher);
+            if (ai === bi) return av > bv ? 1 : -1;
+            return ai < bi ? (ai < 0 ? 1 : -1) : (bi < 0 ? -1 : 1);
+        });
+        header.$filterVisible = false;
     }
 
     public reduce(time, callback) {
@@ -270,6 +294,12 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
             clearTimeout(this._timer);
         }
         this._timer = setTimeout(callback, time);
+    }
+
+    public onFilterDropdownChange(e, header) {
+        if (e) {
+            this.searcher = header.$searcher;
+        }
     }
 
     public onScroll() {
