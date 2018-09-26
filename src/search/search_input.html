@@ -1,4 +1,4 @@
-<div *ngIf="!isSimple && $collection.initialed" class="search-area">
+<div *ngIf="!isSimple" class="search-area">
     <div class="input" [class.focus]="keywordFocus" (click)="keywordsInput.focus();keywordFocus = true">
 
         <div class="key-item" *ngFor="let item of conditionLabels">

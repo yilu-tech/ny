@@ -42,7 +42,8 @@ export class NyFormDirective implements OnChanges, DoCheck {
             change: (name, value) => this.change(name, value),
             hasChange: () => this.hasChange(),
             clear: () => this.change('$body', this._form.body = {}),
-            clearError: () => this.clearError()
+            clearError: () => this.clearError(),
+            setError: (errors: any) => this.setError(errors)
         };
     }
 
@@ -204,5 +205,9 @@ export class NyFormDirective implements OnChanges, DoCheck {
             }
         });
         this.onError.emit(error);
+    }
+
+    public setError(errors: any) {
+        this._handleValidateError(errors);
     }
 }
