@@ -273,18 +273,20 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
     }
 
     public sort(header) {
-        header.$searcher = this.searcher;
-        this.data = this.data.sort((a, b) => {
-            let av = this.value(a, header);
-            let bv = this.value(b, header);
+        header.$searcher = (this.searcher || '').trim();
+        if (header.$searcher) {
+            this.data = this.data.sort((a, b) => {
+                let av = this.value(a, header);
+                let bv = this.value(b, header);
 
-            if (!av || !bv) return 1;
+                if (!av || !bv) return 1;
 
-            let ai = av.indexOf(header.$searcher);
-            let bi = bv.indexOf(header.$searcher);
-            if (ai === bi) return av > bv ? 1 : -1;
-            return ai < bi ? (ai < 0 ? 1 : -1) : (bi < 0 ? -1 : 1);
-        });
+                let ai = av.indexOf(header.$searcher);
+                let bi = bv.indexOf(header.$searcher);
+                if (ai === bi) return 0;
+                return ai < bi ? (ai < 0 ? 1 : -1) : (bi < 0 ? -1 : 1);
+            });
+        }
         header.$filterVisible = false;
     }
 
