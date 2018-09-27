@@ -24,7 +24,6 @@
     white-space: nowrap;
     border: 1px solid #EEEEEE;
     position: relative;
-    background-color: #fafafa;
     & > .tr {
         vertical-align: top;
         &:last-child > .th {
@@ -40,6 +39,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
         min-height: 38px;
+        background-color: #fafafa;
         &:last-child {
             border-right: none;
         }

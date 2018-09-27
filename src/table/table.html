@@ -1,17 +1,18 @@
 <div class="thead" #THEAD>
     <div #THR class="tr">
-        <th class="th lh" #TTH #LH *ngIf="showIndex">#</th>
-        <th class="th" #TTH
+        <th class="th lh" #HCELL #LH *ngIf="showIndex">#</th>
+        <th class="th" #HCELL
             *ngIf="collection.showCheckbox"
             nzShowCheckbox
             [(nzChecked)]="allChecked"
             [nzIndeterminate]="indeterminate"
             (nzCheckedChange)="check()"></th>
-        <th class="th" #TTH
+        <th class="th" #HCELL
             *ngFor="let header of collection.headers"
             [style.width]="toString(header.width)"
             [nzShowSort]="header.allowSort"
-            (nzSortChange)="sort(header.value, $event)">{{header.label}}
+            [(nzSort)]="header.sortDirection"
+            (nzSortChange)="sort(header)">{{header.label}}
         </th>
     </div>
 </div>
@@ -55,8 +56,8 @@
 </div>
 <div class="tfoot" #TFOOT *ngIf="collection.footers.length">
     <div #THR class="tr" *ngFor="let item of collection.footers; let row = index">
-        <th class="th lh" #LH *ngIf="showIndex">Σ</th>
-        <th class="th" *ngIf="collection.showCheckbox"></th>
-        <th class="th" *ngFor="let header of collection.headers; let col = index">{{item[col]}}</th>
+        <th class="th lh" #LH #HCELL *ngIf="showIndex">Σ</th>
+        <th class="th" #HCELL *ngIf="collection.showCheckbox"></th>
+        <th class="th" #HCELL *ngFor="let header of collection.headers; let col = index">{{item[col]}}</th>
     </div>
 </div>

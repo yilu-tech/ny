@@ -26,7 +26,10 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     public ngOnChanges(changes) {
         this.collection.onLoaded = () => this.refreshStatus();
-        this.collection.refreshStatus = () => this.refreshStatus();
+        this.collection.refreshStatus = () => {
+            this.refreshStatus();
+            setTimeout(() => this.ngAfterViewChecked());
+        };
     }
 
     public ngAfterViewChecked() {
@@ -45,6 +48,7 @@ export class NyTable implements OnChanges, AfterViewChecked {
         this.scroll.x = this.scrollEl.nativeElement.scrollLeft;
         this.scroll.y = this.scrollEl.nativeElement.scrollTop;
         this.theadEl.nativeElement.scrollLeft = this.scroll.x;
+        this.tfootEl.nativeElement.scrollLeft = this.scroll.x;
         this.lhEls.forEach((th) => {
             this._renderer.setStyle(th['el'], 'left', this.scroll.x + 'px');
         });
@@ -103,10 +107,15 @@ export class NyTable implements OnChanges, AfterViewChecked {
         }
     }
 
-    public sort(key, status: string) {
-        if (status) {
-            this.collection.orderBy = key + ' ' + status.slice(0, -3);
+    public sort(header) {
+        if (this.collection.sortColumn && this.collection.sortColumn !== header) {
+            this.collection.sortColumn.sortDirection = null;
+        }
+        if (header.sortDirection) {
+            this.collection.sortColumn = header;
+            this.collection.orderBy = header.value + ' ' + header.sortDirection.slice(0, -3);
         } else {
+            this.collection.sortColumn = null;
             this.collection.orderBy = undefined;
         }
         this.collection.load();
