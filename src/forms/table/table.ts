@@ -258,7 +258,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
         } else if ('options' in header) {
             let option = header.options.find((_) => _.value == value);
             if (option) {
-                value = item.label;
+                value = option.label;
             }
         } else if ('format' in header) {
             value = this._formatter(value, this.toString(header.format, item));
