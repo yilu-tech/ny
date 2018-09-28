@@ -35,6 +35,8 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     @Input() isFull: boolean;
     @Input() size: string;
     @Input() title: string;
+    @Input() staticTop: number;
+    @Input() fillHeight: number = 0;
 
     @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() onOpen: EventEmitter<any> = new EventEmitter<any>();
@@ -138,7 +140,7 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     private _getContainerRect() {
         let rect: any = this._container.getBoundingClientRect();
         rect.width = rect.right - rect.left;
-        rect.height = rect.bottom - rect.top;
+        rect.height = rect.bottom - rect.top + this.fillHeight;
         rect.screenWidth = window.innerWidth;
         rect.screenHeight = window.innerHeight;
 
@@ -176,7 +178,7 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
         // let left = this._containerRect.left + 8;
         // let top = this._containerRect.top + 8;
         let left = this._containerRect.left;
-        let top = this._containerRect.top;
+        let top = this.staticTop ? this.staticTop : this._containerRect.top;
         if (!this.isFull) {
             left += Math.max((this._containerRect.width - this.getWidth()) / 2, 0);
             top += Math.max((this._containerRect.height - this._containerRect.heightRef) / 2, 0);
