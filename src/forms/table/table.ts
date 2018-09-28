@@ -266,7 +266,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
         if (typeof value === 'number') {
             value = value.toString();
         }
-        if (replace) {
+        if (replace && value) {
             value = value.replace(header.$searcher, '<span class="searcher">' + header.$searcher + '</span>');
         }
         return value;
