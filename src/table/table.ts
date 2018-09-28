@@ -48,7 +48,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
         this.scroll.x = this.scrollEl.nativeElement.scrollLeft;
         this.scroll.y = this.scrollEl.nativeElement.scrollTop;
         this.theadEl.nativeElement.scrollLeft = this.scroll.x;
-        this.tfootEl.nativeElement.scrollLeft = this.scroll.x;
+        if (this.tfootEl) {
+            this.tfootEl.nativeElement.scrollLeft = this.scroll.x;
+        }
         this.lhEls.forEach((th) => {
             this._renderer.setStyle(th['el'], 'left', this.scroll.x + 'px');
         });
