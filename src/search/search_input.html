@@ -282,7 +282,9 @@
 
         </ng-container>
     </div>
-    <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
-        <span>搜索</span>
-    </button>
+    <div class="search-box">
+        <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
+            <span>搜索</span>
+        </button>
+    </div>
 </ng-container>
