@@ -37,7 +37,7 @@ export class Mock {
 
 
 export class ComplexSearchMock{
-    data:[];
+    data:Array<Object>;
 
     constructor(private url,private total){
 
