@@ -177,7 +177,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
     }
 
     public change(header: any, item?: any, change?: any) {
-        let _item = item || this.newItem;
+        let _item = item || {...this.newItem, $loading: 0};
         if (header.onChange && header.onChange(_item, header, !item, change)) {
             setTimeout(() => this.newItem = {$open: {}, $currPage: _item.$currPage, $lastPage: _item.$lastPage});
         }
