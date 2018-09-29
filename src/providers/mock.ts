@@ -12,7 +12,6 @@ export class Mock {
 
     }
     static mock(url,templateFunction?,fn?){
-        console.log('mock->',url,templateFunction,fn);
         if(templateFunction){
             mock.mock(url,templateFunction);
         }else if(fn){
@@ -37,7 +36,8 @@ export class Mock {
 }
 
 
-export class ComplextSearchMock{
+export class ComplexSearchMock{
+    data:Array<Object>;
 
     constructor(private url,private total){
 
@@ -45,12 +45,15 @@ export class ComplextSearchMock{
 
     mock(){
         console.log(['mock ComplextSearchMock: '],Mock._setUrlHandler(this.url),this.total)
+        this.queryAction();
         Mock.mock(Mock._setUrlHandler(this.url), (options)=>{
             let body = JSON.parse(options.body);
             if(body['action'] == 'fields'){
                 return this.fieldsAction();
             }else if(body['action'] == 'query'){
-                return this.queryAction();
+                var data =  this.paginate(body.size,body.page);
+                console.log('*******',data);
+                return data;
             }
         })
     }
@@ -67,11 +70,23 @@ export class ComplextSearchMock{
 
     queryAction(){
         var name = `data|${this.total}`;
-        var template = {
-            total:this.total
-        };
+        var template = {};
         template[name] = [this.makeData()];
-        return Mock.mock(template);
+        let mockData = Mock.mock(template);
+        this.data = mockData.data;
+    }
+
+    paginate(size,page){
+        let start = size * (page-1);
+        let end = size * page;
+        let data = {
+            data:this.data.slice(start,end),
+            total:this.total,
+            current_page:page,
+            per_page:size
+        }
+        return data;
+
     }
     makeCondition(){}
     makeHeaders(){}

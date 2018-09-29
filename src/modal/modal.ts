@@ -35,6 +35,8 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     @Input() isFull: boolean;
     @Input() size: string;
     @Input() title: string;
+    @Input() staticTop: number;
+    @Input() fillHeight: number = 0;
 
     @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() onOpen: EventEmitter<any> = new EventEmitter<any>();
