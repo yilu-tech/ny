@@ -31,7 +31,7 @@ import {
 
 export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     @Input() visible: boolean;
-    @Input() appendTo: string | Element;
+    @Input() appendTo: string | HTMLElement;
     @Input() isFull: boolean;
     @Input() size: string;
     @Input() title: string;
@@ -47,7 +47,7 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
         return this.visible ? 'flex' : 'none';
     }
 
-    private _container: Element;
+    private _container: HTMLElement;
     private _containerRect: any;
 
     constructor(private renderer: Renderer2, private elRef: ElementRef) {
@@ -137,8 +137,14 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
 
     private _getContainerRect() {
         let rect: any = this._container.getBoundingClientRect();
+        //nz-content下有footer的情况下，高度不够全屏下，获取填充高度
+        let fillHeight = window.innerHeight - rect.bottom;
+        if (fillHeight < 0) {
+            fillHeight = 0;
+        }
+
         rect.width = rect.right - rect.left;
-        rect.height = rect.bottom - rect.top;
+        rect.height = rect.bottom - rect.top + fillHeight;
         rect.screenWidth = window.innerWidth;
         rect.screenHeight = window.innerHeight;
 
@@ -176,7 +182,7 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
         // let left = this._containerRect.left + 8;
         // let top = this._containerRect.top + 8;
         let left = this._containerRect.left;
-        let top = this._containerRect.top;
+        let top = this._container.offsetTop; //容器距离订单的高度
         if (!this.isFull) {
             left += Math.max((this._containerRect.width - this.getWidth()) / 2, 0);
             top += Math.max((this._containerRect.height - this._containerRect.heightRef) / 2, 0);
