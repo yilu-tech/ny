@@ -38,7 +38,7 @@
                                     [(ngModel)]="condition.value"
                                     (ngModelChange)="valueChange(condition, false)"
                                     [nzDisabledDate]="condition.range"
-                                    (nzOnOpenChange)="selectStatusChange($event)">
+                                    (nzOnOpenChange)="selectStatusChange($event)" nzShowTime>
                     </nz-date-picker>
 
                     <nz-range-picker *ngSwitchCase="'date-in'"
@@ -147,7 +147,7 @@
                                 [(ngModel)]="condition.value"
                                 (ngModelChange)="valueChange(condition)"
                                 [nzDisabledDate]="condition.range"
-                                (nzOnOpenChange)="selectStatusChange($event)">
+                                (nzOnOpenChange)="selectStatusChange($event)" nzShowTime>
                 </nz-date-picker>
                 <nz-range-picker *ngSwitchCase="'date-in'"
                                  [(ngModel)]="condition.value"
@@ -242,7 +242,7 @@
                             [(ngModel)]="item[0].value"
                             (ngModelChange)="valueChange(item[0])"
                             [nzDisabledDate]="item[0].range"
-                            (nzOnOpenChange)="selectStatusChange($event)">
+                            (nzOnOpenChange)="selectStatusChange($event)" nzShowTime>
             </nz-date-picker>
             <nz-range-picker *ngSwitchCase="'date-in'"
                              [(ngModel)]="item[0].value"
