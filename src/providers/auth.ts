@@ -29,6 +29,18 @@ export class Auth {
         return this._user ? this._user.shops : [];
     }
 
+    public permissions() {
+        return this._user ? this._user.permissions : [];
+    }
+
+    public setPermissions(permissions: Array<any>) {
+        if (this._user) {
+            this._user.permissions = permissions;
+            this.events.publish('permission:update', permissions);
+        }
+        return this;
+    }
+
     public check(): boolean | Promise<boolean> {
         if (!this.authHandler.hasToken()) {
             return false;
