@@ -91,7 +91,7 @@ export class Api {
         return false;
     }
 
-    public addHandler(handler: () => void, type: string = 'request') {
+    public addHandler(handler: Function, type: string = 'request') {
         if (type === 'request') {
             this._requestHandlers.push(handler);
         } else if (type === 'response') {
