@@ -196,7 +196,7 @@ export class NyFormDirective implements OnChanges, DoCheck {
         let error = {input: {}, other: errors, keys: Object.keys(errors)};
         this._controls.forEach((control) => {
             let name = control.path().join('.');
-            if (errors[name]) {
+            if (Array.isArray(errors[name])) {
                 control.setError({prevValue: control.value, notices: errors[name]});
                 error.input[name] = errors[name];
                 delete errors[name];
