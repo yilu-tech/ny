@@ -118,11 +118,11 @@ export class Api {
 
     private _responseHandler(response: any, request) {
         this.events.publish('http.request:end', response, request);
-        if ('status' in response) {
-            if (response.status === 1) {
-                return response.data || response.pagination;
-            }
-            return Promise.reject(response);
+        if ('data' in response) {
+            return response.data;
+        } 
+        if ('response' in response) {
+            return response.pagination;
         }
         return response;
     }
