@@ -121,7 +121,7 @@ export class Api {
         if ('data' in response) {
             return response.data;
         } 
-        if ('response' in response) {
+        if ('pagination' in response) {
             return response.pagination;
         }
         return response;
