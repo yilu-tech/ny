@@ -174,6 +174,15 @@ export class Collection {
 
     public getHeader(field: string) {
         for (let header of this.headers) {
+            if (Array.isArray(header.value)) {
+
+                if (header.value[header.value.length - 1] === field) {
+                    return header;
+                }
+
+                continue;
+            }
+
             if (header.value === field) {
                 return header;
             }
