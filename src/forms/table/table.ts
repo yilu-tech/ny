@@ -134,9 +134,9 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
         return this.disabled || this.toString(header.disabled, item) || item.$disabled;
     }
 
-    public focus(header: any, item ?: any) {
+    public focus(header: any, event: any, item ?: any) {
         if (!header || !header.onFocus) return;
-        if (header.onFocus) header.onFocus(item || this.newItem);
+        if (header.onFocus) header.onFocus(item || this.newItem, event);
     }
 
     public search(keywords, header, item) {

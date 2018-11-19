@@ -94,3 +94,40 @@ table {
         background-color: #e6f7ff;
     }
 }
+
+/deep/ .thead{
+    .ant-table-column-sorter{
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        width: 14px;
+        height: 17px;
+        margin-top: -8.5px;
+        text-align: center;
+        color: #bfbfbf;
+        transition: all .3s;
+    }
+    .ant-table-column-sorter-up, .ant-table-column-sorter-down{
+        font-size: 12px;
+        transform: scale(.91666667) rotate(0);
+        line-height: 4px;
+        height: 4px;
+        transition: all .3s;
+        display: block;
+    }
+    .ant-table-column-sorter-up.on{
+        color: #1890ff;
+    }
+    .ant-table-column-sorter-down{
+        margin-top: 4px;
+    }
+    .ant-table-column-sorter-down.on{
+        color: #1890ff;
+    }
+    th.ant-table-column-has-actions{
+        position: relative;
+    }
+}
+/deep/ .thead.ant-table-column-has-filters .ant-table-column-sorter{
+    right: 34px;
+}

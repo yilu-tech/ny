@@ -40,7 +40,7 @@
         </td>
         <td *ngFor="let header of headers" [class.has-icon]="header.icon && !isDisabled(header, item)" [ngSwitch]="isDisabled(header, item) ? '' : header.type">
 
-            <input *ngSwitchCase="'string'" type="text" nz-input (focus)="focus(header, item)" (blur)="blur(header, item)"
+            <input *ngSwitchCase="'string'" type="text" nz-input (focus)="focus(header, $event, item)" (blur)="blur(header, item)"
                    [nyDeepName]="header.key" errorStyle="float" [replace]="toString(header.replace, item)" (onChange)="change(header, item, $event)">
 
             <nz-input-number *ngSwitchCase="'number'" [nzMin]="toString(header.min, item)" [nzMax]="toString(header.max, item)"
@@ -79,7 +79,7 @@
     <tr *ngIf="!disabled && showFooter && (!max || data.length <= max - 1)">
         <td>{{data.length + 1}}</td>
         <td *ngFor="let header of activeRow" [class.has-icon]="header.icon" [ngSwitch]="header.type" [attr.colspan]="header.activeColspan">
-            <input *ngSwitchCase="'string'" type="text" nz-input [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)" (focus)="focus(null, header)" (blur)="blur(null, header)">
+            <input *ngSwitchCase="'string'" type="text" nz-input [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)" (focus)="focus(null, $event, header)" (blur)="blur(null, header)">
 
             <nz-input-number *ngSwitchCase="'number'" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-input-number>
 
