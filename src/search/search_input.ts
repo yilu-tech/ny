@@ -485,17 +485,18 @@ export class SearchInput implements OnChanges, OnInit {
             let matchLen = 0;
             for (let i = 0; i < items.length; i++) {
                 if (subItems[i].name === items[i].name &&
-                    subItems[i].operator === items[i].operator &&
-                    (subItems[i].value === items[i].value || items[i].ctype === 'select')) {
+                    subItems[i].operator === items[i].operator
+                    //  &&(subItems[i].value === items[i].value || items[i].ctype === 'select')
+                    ) {
                     matchLen += 1;
                 }
             }
             if (matchLen === items.length) {
                 subItems.forEach((item, i) => {
                     item.checked = true;
-                    if (item.ctype === 'select') {
+                    // if (item.ctype === 'select') {
                         item.value = items[i].value;
-                    }
+                    // }
                 });
                 return true;
             }
