@@ -98,6 +98,7 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
+        console.log(this)
         this.collection.emit(this.$collection);
         this.$collection.addWhere = (name, value, operator = '=') => {
             let field = this.findField(name);
@@ -129,17 +130,18 @@ export class SearchInput implements OnChanges, OnInit {
 
             if (this.isSimple) this.conditions.forEach((item) => item[0].checked = true);
 
-            this.$collection.setHeader(this.makeHeaders(ret.headers, !!ret.conditions));
+            this.$collection.setHeader(this.makeHeaders(ret.headers));
 
             this.$collection.init();
             this.conditionChange();
         });
     }
 
-    public makeHeaders(fields: string[], withPath = false) {
+    public makeHeaders(fields: string[]) {
         return fields.map((item: any) => {
             let field = this.parseField(typeof item === 'object' ? item.value : item);
-            let value = withPath && field.path ? [...field.path, field.name] : (field.rename || field.name);
+
+            let value = item.cascade && field.path.length ? [...field.path, field.name] : (field.rename || field.name);
             let match = this.findField(field);
             let header: any;
             if (typeof item === 'object') {
