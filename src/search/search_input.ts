@@ -98,7 +98,7 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
-        console.log(this)
+        console.log(this);
         this.collection.emit(this.$collection);
         this.$collection.addWhere = (name, value, operator = '=') => {
             let field = this.findField(name);
@@ -118,7 +118,7 @@ export class SearchInput implements OnChanges, OnInit {
     public initControls(inCache = true) {
         this.keywordFields = [];
         this.conditions = [];
-        this.api.post(this.$collection.uri, {action: 'fields'}, {inCache}).then((ret) => {
+        this.api.post(this.$collection.uri, {action: 'prepare'}, {inCache}).then((ret) => {
 
             this.originalFields = ret.fields || ret.conditions || [];
 
@@ -135,12 +135,12 @@ export class SearchInput implements OnChanges, OnInit {
             this.$collection.init();
             this.conditionChange();
         });
+        console.log(this);
     }
 
     public makeHeaders(fields: string[]) {
         return fields.map((item: any) => {
             let field = this.parseField(typeof item === 'object' ? item.value : item);
-
             let value = item.cascade && field.path.length ? [...field.path, field.name] : (field.rename || field.name);
             let match = this.findField(field);
             let header: any;
@@ -172,19 +172,19 @@ export class SearchInput implements OnChanges, OnInit {
             } else {
                 if (!item.custom) this.fields.push(item);
                 if (item.ctype === 'tree-select' && item.childNodes) {
-                    item.map = item.childNodes().then((nodes) =>{
+                    item.map = item.childNodes().then((nodes) => {
                         // item.options = nodes;
                         this.conditions.forEach(collection => {
                             collection.forEach(_ => {
-                                if ( _.name.indexOf(item.name) != -1) {
+                                if (_.name.indexOf(item.name) != -1) {
                                     _.options = nodes;
                                 }
-                            })
-                        })
+                            });
+                        });
                     });
                 }
                 if (item.display) {
-                    this.conditions.push([this.makeCondition(item, item.value, item.operator || "=")]);
+                    this.conditions.push([this.makeCondition(item, item.value, item.operator || '=')]);
                 }
                 if (item.itype === 'string') {
                     this.keywordFields.push(item);
@@ -488,8 +488,8 @@ export class SearchInput implements OnChanges, OnInit {
             for (let i = 0; i < items.length; i++) {
                 if (subItems[i].name === items[i].name &&
                     subItems[i].operator === items[i].operator
-                    //  &&(subItems[i].value === items[i].value || items[i].ctype === 'select')
-                    ) {
+                //  &&(subItems[i].value === items[i].value || items[i].ctype === 'select')
+                ) {
                     matchLen += 1;
                 }
             }
@@ -497,7 +497,7 @@ export class SearchInput implements OnChanges, OnInit {
                 subItems.forEach((item, i) => {
                     item.checked = true;
                     // if (item.ctype === 'select') {
-                        item.value = items[i].value;
+                    item.value = items[i].value;
                     // }
                 });
                 return true;
@@ -533,7 +533,8 @@ export class SearchInput implements OnChanges, OnInit {
         while (list.length) {
             let node = list.shift();
             for (let item of node.fields) {
-                if (this.inPath(node.path, field.path) && item.name === field.name) {
+                if ((this.isSimple && field.fullname === item.name) ||
+                    (item.name === field.name && this.hasPath(node.path, field.path))) {
                     return {...item};
                 }
                 if (item.children) {
@@ -560,12 +561,13 @@ export class SearchInput implements OnChanges, OnInit {
     private parseField(name: string) {
         let argv = name.split('|');
         let field: any = {rename: argv[1]};
+        field.fullname = argv[0];
         field.path = argv[0].split('.');
         field.name = field.path.pop();
         return field;
     }
 
-    private inPath(path: string[], sub: string[]) {
+    private hasPath(path: string[], sub: string[]) {
         if (sub.length > path.length) return false;
         for (let i = sub.length - 1; i >= 0; i--) {
             let j = path.length - sub.length + i;
