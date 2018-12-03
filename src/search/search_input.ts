@@ -98,7 +98,6 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
-        console.log(this);
         this.collection.emit(this.$collection);
         this.$collection.addWhere = (name, value, operator = '=') => {
             let field = this.findField(name);
@@ -135,7 +134,6 @@ export class SearchInput implements OnChanges, OnInit {
             this.$collection.init();
             this.conditionChange();
         });
-        console.log(this);
     }
 
     public makeHeaders(fields: string[]) {
