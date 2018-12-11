@@ -98,7 +98,7 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
-        this.collection.emit(this.$collection);
+        
         this.$collection.addWhere = (name, value, operator = '=') => {
             let field = this.findField(name);
             if (!field) return null;
@@ -110,6 +110,7 @@ export class SearchInput implements OnChanges, OnInit {
                 this.valueChange(condition[0]);
             }
         };
+        this.collection.emit(this.$collection);
         this.$collection.resetHeader = () => this.initControls(false);
         this.initControls();
     }
@@ -121,13 +122,13 @@ export class SearchInput implements OnChanges, OnInit {
 
             this.originalFields = ret.fields || ret.conditions || [];
 
-            this.isSimple = !ret.fields;
+            this.isSimple = ret.display === 'simple';
 
             if (ret.conditions) ret.conditions.forEach((item) => item.display = true);
 
             this.formatFields(this.originalFields);
 
-            if (this.isSimple) this.conditions.forEach((item) => item[0].checked = true);
+            // if (this.isSimple) this.conditions.forEach((item) => item[0].checked = true);
 
             this.$collection.setHeader(this.makeHeaders(ret.headers));
 
@@ -181,11 +182,10 @@ export class SearchInput implements OnChanges, OnInit {
                         });
                     });
                 }
-                if (item.display) {
-                    this.conditions.push([this.makeCondition(item, item.value, item.operator || '=')]);
-                }
-                if (item.itype === 'string') {
+                if (!this.isSimple && (item.itype === 'string' || item.ctype === 'keyword')) {
                     this.keywordFields.push(item);
+                } else if(item.ctype) {
+                    this.conditions.push([this.makeCondition(item, item.value, item.operator || '=')]);
                 }
             }
         }
@@ -336,7 +336,7 @@ export class SearchInput implements OnChanges, OnInit {
 
     public getConditionLabel(condition: Condition) {
         let value = condition.valueLabel || condition.value;
-        if (condition.ctype === 'checkbox') return value;
+        if (condition.ctype === 'checkbox') return condition.label;
         if (value instanceof Array) {
             value = value.join(condition.ctype === 'select' ? ',' : '~');
         }
@@ -401,8 +401,9 @@ export class SearchInput implements OnChanges, OnInit {
             } else if (isEdit === false) {
                 checked = condition.checked = true;
             }
+            if (!checked) return;
         }
-        if (checked) this.conditionChange();
+        this.conditionChange();
     }
 
     public reduceValueChange(condition: Condition) {

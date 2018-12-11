@@ -29,7 +29,7 @@
     <ul class="dropdown-menu" [class.show]="dropDownVisible" (click)="$event.stopPropagation()">
         <li class="menu-item" *ngFor="let groups of conditions; let i = index">
             <div class="item-group" *ngFor="let condition of groups; let j = index" [class.checked]="condition.checked">
-                <span class="item-title" (click)="check(condition, !condition.checked)">{{condition.ctype === 'checkbox' ? condition.valueLabel : condition.label}}</span>
+                <span class="item-title" (click)="check(condition, !condition.checked)">{{condition.label}}</span>
 
                 <span *ngIf="!condition.display"><i>{{op_cn[condition.operator]}}</i></span>
 
@@ -211,11 +211,11 @@
 <ng-container *ngIf="isSimple && $collection.initialed">
     <div class="control" *ngFor="let item of conditions">
 
-        <label>{{item[0].label}}</label>
+        <label *ngIf="item[0].ctype != 'checkbox'">{{item[0].label}}</label>
 
         <ng-container [ngSwitch]="item[0].ctype">
 
-            <label *ngSwitchCase="'checkbox'" nz-checkbox [(ngModel)]="item[0].value" (ngModelChange)="reduceValueChange(item[0])">{{item[0].label}}</label>
+            <label *ngSwitchCase="'checkbox'" nz-checkbox [(ngModel)]="item[0].checked" (ngModelChange)="reduceValueChange(item[0])">{{item[0].label}}</label>
 
             <nz-input-number *ngSwitchCase="'numeric'"
                              [(ngModel)]="item[0].value"
@@ -277,6 +277,17 @@
                        [nzAllowClear]="true">
                 <nz-option *ngFor="let option of item[0].options" [nzLabel]="option.label" [nzValue]="option.value">{{option.label}}</nz-option>
             </nz-select>
+
+            <nz-tree-select *ngSwitchCase="'tree-select'"
+                            [(ngModel)]="item[0].value"
+                            [nzNodes]="item[0].options"
+                            [nzAsyncData]="true"
+                            (ngModelChange)="valueChange(item[0])"
+                            (nzExpandChange)="item[0].childNodes && item[0].childNodes($event)"
+                            (nzOpenChange)="selectStatusChange($event)"
+                            [nzDropdownMatchSelectWidth]="false"
+                            [nzDropdownStyle]="{'max-height': '260px', 'min-width': '200px'}">
+            </nz-tree-select>
 
             <input *ngSwitchDefault nz-input [(ngModel)]="item[0].value" (ngModelChange)="reduceValueChange(item[0])"/>
 
