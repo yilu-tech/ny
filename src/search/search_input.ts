@@ -284,7 +284,7 @@ export class SearchInput implements OnChanges, OnInit {
         let params = [];
         this.conditionLabels = [];
         this.conditions.forEach((items, index) => {
-            items = items.filter((item) => item.checked && !this.isEmpty(item));
+            items = items.filter((item) => (this.isSimple || (!this.isSimple && item.checked)) && !this.isEmpty(item));
             if (items.length === 1) {
                 params.push([items[0].name, items[0].operator, this.value(items[0])]);
             } else if (items.length > 1) {
@@ -470,6 +470,9 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     private isEmpty(condition: Condition) {
+        if (condition.ctype === 'checkbox') {
+            return !condition.checked;
+        }
         if (condition.ctype === 'select' || condition.ctype === 'tree-select') {
             if (condition.selectModel !== 'multiple') {
                 return condition.value === undefined || condition.value === null;
