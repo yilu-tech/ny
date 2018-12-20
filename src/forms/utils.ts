@@ -28,43 +28,43 @@ export function date(format?: string, date?: any): string {
 export function strtodate(date: string, format?: string): Date {
     format = format || 'Y-m-d H:i:s';
 
-    let x = 0, z = 0, y = 0, m = -1, d = 0, h = 0, i = 0, s = 0, u = 0;
+    let x = 0, z = 0, y = 0, m = 0, d = 0, h = 0, i = 0, s = 0, u = 0;
 
     format.replace(/[YmdHisu]/g, function (string, index) {
-        index = x + index - z;
+        index += x - z;
         switch (string) {
             case 'Y':
-                y += parseInt(date.slice(index, index + 4));
+                y = parseInt(date.slice(index, index + 4));
                 x += 4;
                 z += 1;
                 break;
             case 'm':
-                m += parseInt(date.slice(index, index + 2));
+                m = Math.max(parseInt(date.slice(index, index + 2)) - 1, 0);
                 x += 2;
                 z += 1;
                 break;
             case 'd':
-                d += parseInt(date.slice(index, index + 2));
+                d = parseInt(date.slice(index, index + 2));
                 x += 2;
                 z += 1;
                 break;
             case 'H':
-                h += parseInt(date.slice(index, index + 2));
+                h = parseInt(date.slice(index, index + 2));
                 x += 2;
                 z += 1;
                 break;
             case 'i':
-                i += parseInt(date.slice(index, index + 2));
+                i = parseInt(date.slice(index, index + 2));
                 x += 2;
                 z += 1;
                 break;
             case 's':
-                s += parseInt(date.slice(index, index + 2));
+                s = parseInt(date.slice(index, index + 2));
                 x += 2;
                 z += 1;
                 break;
             case 'u':
-                u += parseInt(date.slice(index, index + 3));
+                u = parseInt(date.slice(index, index + 3));
                 x += 3;
                 z += 1;
                 break;
@@ -73,7 +73,8 @@ export function strtodate(date: string, format?: string): Date {
         }
         return string;
     });
-    return new Date(y, m, d, h, m, s, u);
+    
+    return new Date(y, m, d, h, i, s, u);
 }
 
 export function number(_: any, format: string): string {
