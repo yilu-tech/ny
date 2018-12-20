@@ -136,6 +136,12 @@ export class Collection {
             if (this.onExportLoad) this.onExportLoad(body);
             delete body.size;
             this.request('post', this.uri, {body: body}).then((ret) => {
+                if (!Array.isArray(ret)) {
+                    if (ret.footer) {
+                        ret.data.push(...ret.footer);
+                    }
+                    ret = ret.data;
+                }
                 _export.write(ret, headers);
             });
         }
