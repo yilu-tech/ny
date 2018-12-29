@@ -43,7 +43,7 @@
             <input *ngSwitchCase="'string'" type="text" nz-input (focus)="focus(header, $event, item)" (blur)="blur(header, item)"
                    [nyDeepName]="header.key" errorStyle="float" [replace]="toString(header.replace, item)" (onChange)="change(header, item, $event)">
 
-            <nz-input-number *ngSwitchCase="'number'" [nzMin]="toString(header.min, item)" [nzMax]="toString(header.max, item)"
+            <nz-input-number *ngSwitchCase="'number'" [nzMin]="toString(header.min, item)" [nzMax]="toString(header.max, item)" [nzStep]="header.step"
                              [nyDeepName]="header.key" errorStyle="float" [format]="toString(header.format, item)" (onChange)="change(header, item, $event)"></nz-input-number>
 
             <nz-select *ngSwitchCase="'select'" [nzAllowClear]="header.allowClear" [(nzOpen)]="item.$open[header.key]" nzShowSearch [nzDropdownMatchSelectWidth]="false"
