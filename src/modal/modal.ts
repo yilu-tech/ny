@@ -37,6 +37,7 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     @Input() title: string;
     @Input() staticTop: number;
     @Input() fillHeight: number = 0;
+    @Input() autoClose: boolean = false;
 
     @Output() visibleChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() onOpen: EventEmitter<any> = new EventEmitter<any>();
@@ -94,8 +95,10 @@ export class NyModal implements OnChanges, OnInit, AfterViewChecked {
     }
 
     public close() {
-        this.visible = false;
-        this.visibleChange.emit(false);
+        if (!this.autoClose) {
+            this.visible = false;
+            this.visibleChange.emit(false);
+        }
         this.onClose.emit();
     }
 
