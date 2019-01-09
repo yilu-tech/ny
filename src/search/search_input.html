@@ -34,6 +34,28 @@
                 <span *ngIf="!condition.display"><i>{{op_cn[condition.operator]}}</i></span>
 
                 <div class="item-content" [ngSwitch]="condition.ctype">
+                    
+                    <nz-input-number *ngSwitchCase="'numeric'"
+                                     [(ngModel)]="condition.value"
+                                     (ngModelChange)="valueChange(condition)"
+                                     [nzMin]="condition.range[0]"
+                                     [nzMax]="condition.range[1]">
+                    </nz-input-number>
+    
+                    <nz-input-number *ngSwitchCase="'numeric-in'"
+                                     [(ngModel)]="condition.value[0]"
+                                     (ngModelChange)="valueChange(condition)"
+                                     [nzMin]="condition.range[0]"
+                                     [nzMax]="condition.value[1]">
+                    </nz-input-number>
+                    <span *ngSwitchCase="'numeric-in'" class="connector">~</span>
+                    <nz-input-number *ngSwitchCase="'numeric-in'"
+                                     [(ngModel)]="condition.value[1]"
+                                     (ngModelChange)="valueChange(condition)"
+                                     [nzMin]="condition.value[0]"
+                                     [nzMax]="condition.range[1]">
+                    </nz-input-number>
+                    
                     <nz-date-picker *ngSwitchCase="'date'"
                                     [(ngModel)]="condition.value"
                                     (ngModelChange)="valueChange(condition, false)"
