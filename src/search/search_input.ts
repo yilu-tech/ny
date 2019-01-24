@@ -154,14 +154,14 @@ export class SearchInput implements OnChanges, OnInit {
         }).filter((item) => item);
     }
 
-    public formatFields(fields: any[], path: string = '', label: string = '') {
+    public formatFields(fields: any[], path: string = '', prefix: string = '') {
         for (let item of fields) {
             item = {...item};
             if (path) item.name = path + '.' + item.name;
             if (item.children) {
                 item.name = item.name.slice(0, -2);
-            } else {
-                item.label = label + item.label;
+            } else if (item.isFullLabel !== false) {
+                item.label = prefix + item.label;
             }
             if (this.fieldOptions && this.fieldOptions[item.name]) {
                 Object.assign(item, this.fieldOptions[item.name]);
