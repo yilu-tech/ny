@@ -65,7 +65,7 @@
                 </nz-option>
             </nz-select>
 
-            <nz-date-picker *ngSwitchCase="'date'" [nyDeepName]="header.key"
+            <nz-date-picker *ngSwitchCase="'date'" [nyDeepName]="header.key" [nzPlaceHolder]="newItem[header.placeholder] || ''"
                             errorStyle="float" [format]="toString(header.format, item)" (onChange)="change(header, item, $event)"></nz-date-picker>
 
             <span *ngSwitchDefault [innerHTML]="value(item, header, header.$searcher)"></span>
@@ -83,7 +83,7 @@
 
             <nz-input-number *ngSwitchCase="'number'" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-input-number>
 
-            <nz-date-picker *ngSwitchCase="'date'" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-date-picker>
+            <nz-date-picker *ngSwitchCase="'date'" [nzPlaceHolder]="newItem[header.placeholder] || ''" [(ngModel)]="newItem[header.key]" (ngModelChange)="change(header)"></nz-date-picker>
 
             <nz-select *ngSwitchCase="'select'" [(ngModel)]="newItem[header.key]" [(nzOpen)]="newItem.$open[header.key]" (ngModelChange)="change(header)"
                        [nzAllowClear]="header.allowClear" nzShowSearch [nzDropdownMatchSelectWidth]="false"
