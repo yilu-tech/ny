@@ -131,7 +131,7 @@ export class Collection {
 
         if (type === 'all') {
             let body = this.makeOptions();
-            body.fiedls = this.headers.map((item) => item.field || item.value);
+            body.fields = this.headers.map((item) => item.field || item.value);
             body.extras = {type};
             if (this.onExportLoad) this.onExportLoad(body);
             delete body.size;
