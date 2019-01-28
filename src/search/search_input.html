@@ -90,6 +90,7 @@
 
                     <nz-select *ngSwitchCase="'select'"
                                [(ngModel)]="condition.value"
+                               [nzShowSearch]="condition.showSearch"
                                (ngModelChange)="valueChange(condition, false)"
                                [nzMode]="condition.selectModel"
                                [nzDropdownMatchSelectWidth]="false"
