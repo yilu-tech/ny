@@ -53,7 +53,7 @@
                     <div (click)="add(header, item)"><span>{{item.$keywords}}</span></div>
                 </nz-option>
                 <ng-container *ngIf="!item.$loading">
-                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="item.$loading" nzDisabled nzCustomContent>
                     <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
@@ -92,7 +92,7 @@
                     <div (click)="add(header)"><span>{{newItem.$keywords}}</span></div>
                 </nz-option>
                 <ng-container *ngIf="newItem.$loading != 1">
-                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                    <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="newItem.$loading" nzDisabled nzCustomContent>
                     <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
