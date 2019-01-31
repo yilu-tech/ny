@@ -46,6 +46,7 @@ export class Export {
 
     public static downloadUrl(url: string, filename?: string) {
         let link = document.createElement('a');
+        link.target = "_blank";
         link.href = url;
         if (filename) {
             link.download = filename;
