@@ -168,7 +168,7 @@ export class Collection {
 
         if (this.onExportLoad) this.onExportLoad(body);
 
-        return this.request('post', this.uri, {body}).then((code) => 'export?t=' + code);
+        return this.request('post', this.uri, {body}).then((str) => 'export?' + str);
     }
 
     public setHeader(headers) {
