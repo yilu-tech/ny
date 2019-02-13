@@ -57,6 +57,7 @@
                     </nz-input-number>
                     
                     <nz-date-picker *ngSwitchCase="'date'"
+                                    [hidden]="item[0].hidden"
                                     [(ngModel)]="condition.value"
                                     (ngModelChange)="valueChange(condition, false)"
                                     [nzDisabledDate]="condition.range"
@@ -234,7 +235,7 @@
 <ng-container *ngIf="isSimple && $collection.initialed">
     <div class="control" *ngFor="let item of conditions">
 
-        <label *ngIf="item[0].ctype != 'checkbox'">{{item[0].label}}</label>
+        <label *ngIf="item[0].ctype != 'checkbox'" [hidden]="item[0].hidden">{{item[0].label}}</label>
 
         <ng-container [ngSwitch]="item[0].ctype">
 
@@ -262,6 +263,7 @@
             </nz-input-number>
 
             <nz-date-picker *ngSwitchCase="'date'"
+                            [hidden]="item[0].hidden"
                             [(ngModel)]="item[0].value"
                             (ngModelChange)="valueChange(item[0])"
                             [nzDisabledDate]="item[0].range"
