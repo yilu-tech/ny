@@ -318,7 +318,7 @@
 
         </ng-container>
     </div>
-    <div class="search-box">
+    <div class="search-box" *ngIf="showSearchBtn">
         <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
             <span>搜索</span>
         </button>

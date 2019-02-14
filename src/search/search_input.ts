@@ -45,6 +45,7 @@ export class SearchInput implements OnChanges, OnInit {
     public visible: boolean = false;
     public originalFields: any[] = [];
     public originData: any[] = [];
+    showSearchBtn: boolean = true;
 
     @Input() set uri(_: string) {
         this.$collection.uri = _;
@@ -124,7 +125,17 @@ export class SearchInput implements OnChanges, OnInit {
 
             this.isSimple = ret.display === 'simple';
 
-            if (ret.conditions) ret.conditions.forEach((item) => item.display = true);
+            if (ret.conditions) {
+                ret.conditions.forEach((item) => item.display = true);
+                let showConditions = ret.conditions.filter(item => !item.hidden) || [];
+                if (showConditions.length) {
+                    this.showSearchBtn = true;
+                } else {
+                    this.showSearchBtn = false;
+                }
+            } else {
+                this.showSearchBtn = false;
+            }
 
             this.formatFields(this.originalFields);
 
