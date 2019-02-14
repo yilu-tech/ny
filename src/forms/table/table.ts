@@ -56,14 +56,13 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
                 } else if (change.name === '$body') this.data = [];
             });
             this.form.onError.subscribe((error) => {
-                let keys = Object.keys(error.other);
-                let prefix = this.group.path().join('.') + '.';
-                this.data.forEach((item, intex) => {
-                    let name = prefix + intex;
-                    let match = keys.filter((_) => _.indexOf(name) === 0);
+                let keys = <any[]>Object.keys(error.other).map((key) => key.split('.'));
+                let index = this.group.path().length;
+                this.data.forEach((item, row) => {
+                    let match = keys.filter((_) => _[index] == row);
                     item.$hasError = !!match.length;
                     item.$errorNotice = [];
-                    match.forEach((_) => item.$errorNotice.push(...error.other[_]));
+                    match.forEach((_) => item.$errorNotice.push(...error.other[_.join('.')]));
                 });
             });
         }
