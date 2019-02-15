@@ -295,6 +295,7 @@
             </nz-time-picker>
 
             <nz-select *ngSwitchCase="'select'"
+                        [nzShowSearch]="item[0].showSearch"
                        [(ngModel)]="item[0].value"
                        (ngModelChange)="valueChange(item[0])"
                        [nzMode]="item[0].selectModel"
