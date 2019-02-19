@@ -285,6 +285,7 @@ export class TableInput implements OnChanges, OnInit, AfterViewChecked {
                 if (ai === bi) return 0;
                 return ai < bi ? (ai < 0 ? 1 : -1) : (bi < 0 ? -1 : 1);
             });
+            if (this.form) this.form.setValue(this.path(), [...this.data], {viewChanged: true});
         }
         header.$filterVisible = false;
     }
