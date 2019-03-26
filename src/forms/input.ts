@@ -69,7 +69,7 @@ export class NyInputDirective implements OnChanges, OnDestroy {
     private readonly _parent: NyFormDirective;
     private readonly _group: NyGroupDirective;
     private _errorEl: HTMLElement;
-    private _timer: NodeJS.Timer;
+    private _timer: NodeJS.Timer | any;
 
     constructor(@Optional() @Host() parent: NyFormDirective,
                 @Optional() @Host() group: NyGroupDirective,
