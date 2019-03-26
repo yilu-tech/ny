@@ -63,13 +63,13 @@ export class NyInputDirective implements OnChanges, OnDestroy {
     public firstChange: boolean = true;
     public initialValue: any;
     public inputEl: HTMLInputElement;
-    public valueAccessor: ControlValueAccessor = null;
+    public valueAccessor: any = null;
 
     private _registered: boolean;
     private readonly _parent: NyFormDirective;
     private readonly _group: NyGroupDirective;
     private _errorEl: HTMLElement;
-    private _timer: number;
+    private _timer: NodeJS.Timer;
 
     constructor(@Optional() @Host() parent: NyFormDirective,
                 @Optional() @Host() group: NyGroupDirective,
