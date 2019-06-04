@@ -62,7 +62,11 @@ export class NyFormDirective implements OnChanges, DoCheck {
     public body() {
         const options: any = {body: {}};
 
-        this._controls.forEach((control) => this.setValue(control.path(), control.value, options));
+        this._controls.forEach((control) => {
+            if (!this._form.exceptDsiabled || !control.disabled) {
+                this.setValue(control.path(), control.value, options);
+            }
+        });
 
         if (Array.isArray(this._form.names)) {
             this._form.names.forEach((_) => {
