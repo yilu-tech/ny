@@ -1,4 +1,16 @@
-import { Component, OnChanges, AfterViewChecked, Input, ViewChildren, ViewChild, QueryList, ElementRef, Renderer2 } from '@angular/core';
+import {
+    Component,
+    OnChanges,
+    AfterViewChecked,
+    Input,
+    ViewChildren,
+    ViewChild,
+    QueryList,
+    ElementRef,
+    Renderer2,
+    ContentChildren
+} from '@angular/core';
+import { NyColumn } from './column';
 
 @Component({
     selector: 'ny-table',
@@ -16,6 +28,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
     @ViewChildren('LH') public lhEls: QueryList<HTMLElement>;
     @ViewChildren('THR') public thrEls: QueryList<ElementRef>;
 
+    @ContentChildren(NyColumn) public columnTemplates: QueryList<NyColumn>;
+
+    public headers: any[] = [];
     public scroll = {x: 0, y: 0};
     public allChecked = false;
     public indeterminate = false;
@@ -25,11 +40,14 @@ export class NyTable implements OnChanges, AfterViewChecked {
     }
 
     public ngOnChanges(changes) {
-        this.collection.onLoaded = () => this.refreshStatus();
-        this.collection.refreshStatus = () => {
-            this.refreshStatus();
-            setTimeout(() => this.ngAfterViewChecked());
-        };
+        if ('collection' in changes) {
+            this.collection.onLoaded = () => this.refreshStatus();
+            this.collection.refreshStatus = () => {
+                this.refreshStatus();
+                setTimeout(() => this.ngAfterViewChecked());
+            };
+            this.collection.onSetHeader = () => this.bindHeaders();
+        }
     }
 
     public ngAfterViewChecked() {
@@ -64,7 +82,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
         let color = this.toString(header.color, item);
         if (!color) {
             let option = this.collection.getOption(item, header);
-            if (option) color = option.color;
+            if (option) {
+                color = option.color;
+            }
         }
         return color;
     }
@@ -79,7 +99,6 @@ export class NyTable implements OnChanges, AfterViewChecked {
         const checkedNumber = this.collection.checkedItems.length;
 
         this.allChecked = checkedNumber === this.collection.data.length;
-
         this.indeterminate = (!this.allChecked) && checkedNumber > 0;
     }
 
@@ -89,7 +108,9 @@ export class NyTable implements OnChanges, AfterViewChecked {
         } else {
             this.collection.currentItem = item;
         }
-        if (this.collection.onClick) this.collection.onClick(item);
+        if (this.collection.onClick) {
+            this.collection.onClick(item);
+        }
     }
 
     public dblClick(item) {
@@ -125,5 +146,18 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     public LHIWidth() {
         return this.index(this.collection.data.length - 1).toString().length * 8 + 16;
+    }
+
+    private bindHeaders() {
+        this.headers = Object.assign([], this.collection.headers);
+
+        this.columnTemplates.forEach(item => {
+            let header = this.collection.headers.find(_ => _.value == item.binding);
+            if (header) {
+                item.assign(header);
+            } else {
+                this.headers.push(item.toJson());
+            }
+        });
     }
 }
