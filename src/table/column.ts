@@ -10,6 +10,8 @@ export class NyColumn {
     @Input() minWidth: string;
     @Input() maxWidth: string;
 
+    @Input() after: string;
+
     constructor(protected templateRef: TemplateRef<any>) {
 
     }

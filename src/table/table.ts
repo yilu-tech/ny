@@ -20,6 +20,7 @@ import { NyColumn } from './column';
 export class NyTable implements OnChanges, AfterViewChecked {
     @Input() collection: any = {data: [], footers: []};
     @Input() showIndex: boolean;
+    @Input() showHeaders: string[];
 
     @ViewChild('Scroll') public scrollEl: ElementRef;
     @ViewChild('THEAD') public theadEl: ElementRef;
@@ -149,14 +150,23 @@ export class NyTable implements OnChanges, AfterViewChecked {
     }
 
     private bindHeaders() {
-        this.headers = Object.assign([], this.collection.headers);
+        this.headers = this.collection.headers.filter((item) => {
+            return !this.showHeaders || this.showHeaders.indexOf(item.value) >= 0;
+        });
 
         this.columnTemplates.forEach(item => {
             let header = this.collection.headers.find(_ => _.value == item.binding);
             if (header) {
-                item.assign(header);
-            } else {
+                return item.assign(header);
+            }
+            if (item.after === '$') {
+                return this.headers.unshift(item.toJson());
+            }
+            let index = this.headers.findIndex((_) => _.value == item.after);
+            if (index < 0) {
                 this.headers.push(item.toJson());
+            } else {
+                this.headers.splice(index, 0, item.toJson());
             }
         });
     }
