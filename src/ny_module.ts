@@ -7,6 +7,7 @@ import { NyFormModule } from './forms/form_module';
 import { NyModal, NyHeader, NyFooter } from './modal/modal';
 import { NyRunNumber } from './animate/run_number';
 import { NyTable } from './table/table';
+import { NyColumn } from './table/column';
 import { SearchInput } from './search/search_input';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { SearchInput } from './search/search_input';
         NyFooter,
         NyRunNumber,
         NyTable,
+        NyColumn,
         SearchInput
     ],
 
@@ -26,6 +28,7 @@ import { SearchInput } from './search/search_input';
         NyHeader,
         NyFooter,
         NyTable,
+        NyColumn,
         NyRunNumber,
         SearchInput
     ]
