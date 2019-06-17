@@ -161,7 +161,6 @@ export class Collection {
 
         if (type === 'all') {
             let body = this.makeOptions();
-            body.fields = this.headers.map((item) => item.field || item.value);
             body.extras = {type};
             if (this.onExportLoad) {
                 this.onExportLoad(body);
@@ -309,7 +308,7 @@ export class Collection {
         let options: any = {
             action: 'query',
             params: [...this.params],
-            fields: headers.filter((_) => !_.custom).map((header) => header.field),
+            fields: headers.filter((_) => !_.custom).map((header) => header.field || header.value),
             orderBy: this.orderBy,
             groupBy: this.groupBy
         };
