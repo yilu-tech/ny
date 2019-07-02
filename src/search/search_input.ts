@@ -99,10 +99,12 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
-        
+
         this.$collection.addWhere = (name, value, operator = '=') => {
             let field = this.findField(name);
-            if (!field) return null;
+            if (!field) {
+                return null;
+            }
             let condition = [this.makeCondition({...field, operator}, value)];
             if (this.setSameCondition(condition)) {
                 this.conditionChange();
@@ -157,10 +159,14 @@ export class SearchInput implements OnChanges, OnInit {
             if (typeof item === 'object') {
                 header = {label: match ? match.label : '', ...item, value, field: item.value};
             } else {
-                if (!match) return;
+                if (!match) {
+                    return;
+                }
                 header = {value, label: match.label, field: item};
             }
-            if (match && match.options) header.map = match.options;
+            if (match && match.options) {
+                header.map = match.options;
+            }
             return header;
         }).filter((item) => item);
     }
@@ -168,7 +174,9 @@ export class SearchInput implements OnChanges, OnInit {
     public formatFields(fields: any[], path: string = '', prefix: string = '') {
         for (let item of fields) {
             item = {...item};
-            if (path) item.name = path + '.' + item.name;
+            if (path) {
+                item.name = path + '.' + item.name;
+            }
             if (item.children) {
                 item.name = item.name.slice(0, -2);
             } else if (item.isFullLabel !== false) {
@@ -180,7 +188,9 @@ export class SearchInput implements OnChanges, OnInit {
             if (item.children) {
                 this.formatFields(item.children, item.name, item.label + '/');
             } else {
-                if (!item.custom) this.fields.push(item);
+                if (!item.custom) {
+                    this.fields.push(item);
+                }
                 if (item.ctype === 'tree-select' && item.childNodes) {
                     item.map = item.childNodes().then((nodes) => {
                         // item.options = nodes;
@@ -195,7 +205,7 @@ export class SearchInput implements OnChanges, OnInit {
                 }
                 if (!this.isSimple && (item.itype === 'string' || item.ctype === 'keyword')) {
                     this.keywordFields.push(item);
-                } else if(item.ctype) {
+                } else if (item.ctype) {
                     this.conditions.push([this.makeCondition(item, item.value, item.operator || '=')]);
                 }
             }
@@ -207,13 +217,17 @@ export class SearchInput implements OnChanges, OnInit {
         condition.value = (value === undefined ? field.value : value);
         condition.operator = operator;
         condition.range = condition.range || [];
-        if (!condition.ctype) condition.ctype = field.itype;
+        if (!condition.ctype) {
+            condition.ctype = field.itype;
+        }
 
         if (condition.ctype === 'select' || condition.ctype === 'radio' || condition.ctype === 'multiple') {
             condition.options = field.options || [];
             if (condition.ctype === 'multiple') {
                 condition.selectModel = 'multiple';
-                if (!Array.isArray(condition.value)) condition.value = [condition.value];
+                if (!Array.isArray(condition.value)) {
+                    condition.value = [condition.value];
+                }
             } else {
                 condition.selectModel = 'default';
             }
@@ -280,7 +294,9 @@ export class SearchInput implements OnChanges, OnInit {
 
     public addKeywordCondition(field: any) {
         let keyword = this.keyword.trim();
-        if (!keyword || !this.validateConditionLength()) return;
+        if (!keyword || !this.validateConditionLength()) {
+            return;
+        }
         let condition = this.makeCondition(field, keyword, 'like');
         if (!this.setSameCondition([condition])) {
             this.conditions.push([condition]);
@@ -334,7 +350,9 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public apply() {
-        if (!this.editConditions.length) return;
+        if (!this.editConditions.length) {
+            return;
+        }
 
         this.editConditions.forEach((item) => item.checked = true);
         if (!this.setSameCondition(this.editConditions)) {
@@ -347,7 +365,9 @@ export class SearchInput implements OnChanges, OnInit {
 
     public getConditionLabel(condition: Condition) {
         let value = condition.valueLabel || condition.value;
-        if (condition.ctype === 'checkbox') return condition.label;
+        if (condition.ctype === 'checkbox') {
+            return condition.label;
+        }
         if (value instanceof Array) {
             value = value.join(condition.ctype === 'select' ? ',' : '~');
         }
@@ -388,31 +408,16 @@ export class SearchInput implements OnChanges, OnInit {
 
     public valueChange(condition: Condition, isEdit = true) {
         let checked = condition.checked;
-        if (condition.ctype === 'select') {
-            if (Array.isArray(condition.value)) {
-                condition.valueLabel = condition.value.map((item) => this.getValueLabel(item, condition.options));
-            } else {
-                condition.valueLabel = this.getValueLabel(condition.value, condition.options);
-            }
-        } else if (condition.value instanceof Array) {
-            condition.valueLabel = condition.value.map((item: any) => {
-                if (item instanceof Date) {
-                    return date(condition.ctype === 'time-in' ? 'H:i:s' : condition.format, item);
-                }
-                return item;
-            });
-        } else if (condition.value instanceof Date) {
-            condition.valueLabel = date(condition.ctype === 'time' ? 'H:i:s' : condition.format, condition.value);
-        } else if (condition.ctype === 'tree-select') {
-            condition.valueLabel = this.getValueLabel(condition.value, condition.options, 'title', 'key');
-        }
+        condition.valueLabel = this.makeValueLable(condition);
         if (!this.isSimple) {
             if (this.isEmpty(condition)) {
                 condition.checked = false;
             } else if (isEdit === false) {
                 checked = condition.checked = true;
             }
-            if (!checked) return;
+            if (!checked) {
+                return;
+            }
         }
         this.conditionChange();
     }
@@ -439,7 +444,9 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public check(condition, status: boolean) {
-        if (status && !this.validateConditionLength()) return;
+        if (status && !this.validateConditionLength()) {
+            return;
+        }
 
         if (Array.isArray(condition)) {
             condition.forEach((item) => item.checked = status);
@@ -458,7 +465,9 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     public bindHiddenListener(event?: any) {
-        if (event) event.stopPropagation();
+        if (event) {
+            event.stopPropagation();
+        }
         if (!this.dropDownVisible) {
             this.dropDownVisible = true;
         } else if (this._hiddenListener) {
@@ -496,7 +505,9 @@ export class SearchInput implements OnChanges, OnInit {
 
     private setSameCondition(items: Condition[]) {
         for (let subItems of this.conditions) {
-            if (subItems.length !== items.length || subItems === items) continue;
+            if (subItems.length !== items.length || subItems === items) {
+                continue;
+            }
             let matchLen = 0;
             for (let i = 0; i < items.length; i++) {
                 if (subItems[i].name === items[i].name &&
@@ -511,6 +522,7 @@ export class SearchInput implements OnChanges, OnInit {
                     item.checked = true;
                     // if (item.ctype === 'select') {
                     item.value = items[i].value;
+                    item.valueLabel = this.makeValueLable(item);
                     // }
                 });
                 return true;
@@ -528,6 +540,28 @@ export class SearchInput implements OnChanges, OnInit {
         return true;
     }
 
+    private makeValueLable(condition: Condition) {
+        if (condition.ctype === 'select') {
+            if (Array.isArray(condition.value)) {
+                return condition.value.map((item) => this.getValueLabel(item, condition.options));
+            } else {
+                return this.getValueLabel(condition.value, condition.options);
+            }
+        } else if (condition.value instanceof Array) {
+            return condition.value.map((item: any) => {
+                if (item instanceof Date) {
+                    return date(condition.ctype === 'time-in' ? 'H:i:s' : condition.format, item);
+                }
+                return item;
+            });
+        } else if (condition.value instanceof Date) {
+            return date(condition.ctype === 'time' ? 'H:i:s' : condition.format, condition.value);
+        } else if (condition.ctype === 'tree-select') {
+            return this.getValueLabel(condition.value, condition.options, 'title', 'key');
+        }
+        return condition.value;
+    }
+
     private getValueLabel(value, options: any[], labelKey = 'label', valueKey = 'value') {
         for (let item of options) {
             if (item[valueKey] === value) {
@@ -535,13 +569,17 @@ export class SearchInput implements OnChanges, OnInit {
             }
             if (item.children) {
                 let label = this.getValueLabel(value, item.children, labelKey, valueKey);
-                if (label) return label;
+                if (label) {
+                    return label;
+                }
             }
         }
     }
 
     private findField(field: any) {
-        if (typeof field === 'string') field = this.parseField(field);
+        if (typeof field === 'string') {
+            field = this.parseField(field);
+        }
         let list = [{fields: this.originalFields, path: []}];
         while (list.length) {
             let node = list.shift();
@@ -581,10 +619,14 @@ export class SearchInput implements OnChanges, OnInit {
     }
 
     private hasPath(path: string[], sub: string[]) {
-        if (sub.length > path.length) return false;
+        if (sub.length > path.length) {
+            return false;
+        }
         for (let i = sub.length - 1; i >= 0; i--) {
             let j = path.length - sub.length + i;
-            if (sub[i] !== path[j]) return false;
+            if (sub[i] !== path[j]) {
+                return false;
+            }
         }
         return true;
     }
