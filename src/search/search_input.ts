@@ -110,6 +110,7 @@ export class SearchInput implements OnChanges, OnInit {
                 this.conditionChange();
             } else {
                 this.conditions.push(condition);
+                condition[0].checked = true;
                 this.valueChange(condition[0]);
             }
         };
