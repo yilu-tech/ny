@@ -8,6 +8,7 @@ import {
     QueryList,
     ElementRef,
     Renderer2,
+    HostListener,
     ContentChildren
 } from '@angular/core';
 import { NyColumn } from './column';
@@ -25,8 +26,8 @@ export class NyTable implements OnChanges, AfterViewChecked {
     @ViewChild('Scroll') public scrollEl: ElementRef;
     @ViewChild('THEAD') public theadEl: ElementRef;
     @ViewChild('TFOOT') public tfootEl: ElementRef;
-    @ViewChildren('TH') public thEls: QueryList<HTMLElement>;
-    @ViewChildren('LH') public lhEls: QueryList<HTMLElement>;
+    @ViewChildren('TH', {read: ElementRef}) public thEls: QueryList<ElementRef>;
+    @ViewChildren('LH', {read: ElementRef}) public lhEls: QueryList<ElementRef>;
     @ViewChildren('THR') public thrEls: QueryList<ElementRef>;
 
     @ContentChildren(NyColumn) public columnTemplates: QueryList<NyColumn>;
@@ -38,6 +39,11 @@ export class NyTable implements OnChanges, AfterViewChecked {
 
     constructor(private _renderer: Renderer2) {
 
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize(event) {
+        this.ngAfterViewChecked();
     }
 
     public ngOnChanges(changes) {
@@ -52,9 +58,12 @@ export class NyTable implements OnChanges, AfterViewChecked {
     }
 
     public ngAfterViewChecked() {
-        this.thEls.forEach((item, index) => {
+        if (!this.thEls) {
+            return;
+        }
+        this.thEls.forEach((item: ElementRef, index) => {
             this.thrEls.forEach((tr) => {
-                tr.nativeElement.children[index].style.width = item['el'].clientWidth + 'px';
+                tr.nativeElement.children[index].style.width = item.nativeElement.clientWidth + 'px';
             });
         });
     }
@@ -70,8 +79,8 @@ export class NyTable implements OnChanges, AfterViewChecked {
         if (this.tfootEl) {
             this.tfootEl.nativeElement.scrollLeft = this.scroll.x;
         }
-        this.lhEls.forEach((th) => {
-            this._renderer.setStyle(th['el'], 'left', this.scroll.x + 'px');
+        this.lhEls.forEach((th: ElementRef) => {
+            this._renderer.setStyle(th.nativeElement, 'left', this.scroll.x + 'px');
         });
     }
 

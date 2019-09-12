@@ -17,7 +17,7 @@
             <nz-dropdown *ngIf="header.showFilter" nzTrigger="click" [nzClickHide]="false"
                          [(nzVisible)]="header.$filterVisible"
                          (nzVisibleChange)="onFilterDropdownChange($event, header)">
-                <i class="anticon anticon-filter ant-table-filter-icon" nz-dropdown></i>
+                <i class="ant-table-filter-icon" nz-icon type="filter" theme="outline" nz-dropdown></i>
 
                 <div class="filter-dropdown">
                     <input type="text" nz-input [nzSize]="'small'" [(ngModel)]="searcher">
@@ -56,11 +56,11 @@
                     <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="item.$loading" nzDisabled nzCustomContent>
-                    <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
+                    <i nz-icon type="loading" theme="outline" [nzSpin]="true"></i> Loading Data...
                 </nz-option>
                 <nz-option *ngIf="showCreate(header)" nzCustomContent>
                     <div (click)="onCreate(header, item)">
-                        <i class="anticon anticon-plus"></i><span>添加</span>
+                        <i nz-icon type="plus" theme="outline"></i><span>添加</span>
                     </div>
                 </nz-option>
             </nz-select>
@@ -95,11 +95,11 @@
                     <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="newItem.$loading" nzDisabled nzCustomContent>
-                    <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
+                    <i nz-icon type="loading" theme="outline" [nzSpin]="true"></i> Loading Data...
                 </nz-option>
                 <nz-option *ngIf="showCreate(header)" nzCustomContent>
                     <div (click)="onCreate(header)">
-                        <i class="anticon anticon-plus"></i><span>添加</span>
+                        <i nz-icon type="plus" theme="outline"></i><span>添加</span>
                     </div>
                 </nz-option>
             </nz-select>
@@ -112,3 +112,4 @@
     </tr>
     </tbody>
 </table>
+

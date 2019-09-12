@@ -21,7 +21,7 @@ import {
         <div #header class="header">
             <div class="header-content"><h2>{{title}}</h2></div>
             <div class="header-action">
-                <i class="anticon anticon-close" (click)="close()"></i>
+                <i nz-icon type="close" theme="outline" (click)="close()"></i>
             </div>
         </div>
         <div #content class="content">

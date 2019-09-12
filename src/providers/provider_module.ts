@@ -1,19 +1,22 @@
 import { NgModule } from '@angular/core';
 
-import { Api } from './api';
-import { Auth } from './auth';
+import { Http, HttpKernel, CompleteUrl, OauthRequest } from './http';
+import { Auth, AuthToken, AuthGuard } from './auth';
 import { Cache } from './cache';
 import { Events, GlobalEvents } from './events';
-import { AuthHandler } from './handlers/auth.handler';
-import { AuthGuard } from './handlers/auth.guard';
 
 @NgModule({
     providers: [
-        Api,
+        Http,
+        HttpKernel,
         Auth,
         Cache,
-        AuthHandler,
+        AuthToken,
         AuthGuard,
+
+        CompleteUrl,
+        OauthRequest,
+
         {provide: GlobalEvents, useClass: Events}
     ]
 })

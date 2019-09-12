@@ -3,15 +3,18 @@
 
         <div class="key-item" *ngFor="let item of conditionLabels">
             <span>{{item.label}}</span>
-            <i class="anticon anticon-close" (click)="check(item.items, false)"></i>
+            <i nz-icon type="close" theme="outline" (click)="check(item.items, false)"></i>
         </div>
 
         <input #keywordsInput type="text" [(ngModel)]="keyword" (keyup)="keywordChange($event)" (blur)="blur()"/>
 
-        <i class="anticon anticon-search" (click)="$collection.load()"></i>
+        <i nz-icon type="search" theme="outline" (click)="$collection.load()"></i>
 
         <ul class="dropdown-menu" [class.show]="keyword && keywordFields.length">
-            <li *ngFor="let item of keywordFields; let i = index" [class.active]="i === kIndex" (mousedown)="addKeywordCondition(item)">{{item.label}}</li>
+            <li *ngFor="let item of keywordFields; let i = index" [class.active]="i === kIndex" (mousedown)="addKeywordCondition(item)">
+                <label>{{item.label}}</label>
+                <i class="anticon anticon-check"></i>
+            </li>
         </ul>
 
     </div>
@@ -19,10 +22,10 @@
     <nz-button-group>
         <button nz-button (click)="bindHiddenListener($event)">
             <span>筛选</span>
-            <i class="anticon anticon-down"></i>
+            <i nz-icon type="down" theme="outline"></i>
         </button>
         <button nz-button [nzLoading]="$collection.pending" (click)="$collection.load()">
-            <i class="anticon anticon-reload"></i>
+            <i nz-icon type="reload" theme="outline"></i>
         </button>
     </nz-button-group>
 
@@ -34,14 +37,14 @@
                 <span *ngIf="!condition.display"><i>{{op_cn[condition.operator]}}</i></span>
 
                 <div class="item-content" [ngSwitch]="condition.ctype">
-                    
+
                     <nz-input-number *ngSwitchCase="'numeric'"
                                      [(ngModel)]="condition.value"
                                      (ngModelChange)="valueChange(condition)"
                                      [nzMin]="condition.range[0]"
                                      [nzMax]="condition.range[1]">
                     </nz-input-number>
-    
+
                     <nz-input-number *ngSwitchCase="'numeric-in'"
                                      [(ngModel)]="condition.value[0]"
                                      (ngModelChange)="valueChange(condition)"
@@ -55,9 +58,9 @@
                                      [nzMin]="condition.value[0]"
                                      [nzMax]="condition.range[1]">
                     </nz-input-number>
-                    
+
                     <nz-date-picker *ngSwitchCase="'date'"
-                                    [hidden]="item[0].hidden"
+                                    [hidden]="condition.hidden"
                                     [(ngModel)]="condition.value"
                                     (ngModelChange)="valueChange(condition, false)"
                                     [nzDisabledDate]="condition.range"
@@ -115,12 +118,12 @@
 
                     <div *ngSwitchDefault>"{{condition.valueLabel || condition.value}}"</div>
                 </div>
-                <i class="anticon anticon-delete right" *ngIf="!condition.display" (click)="removeCondition(j, i)"></i>
+                <i nz-icon class="right" type="delete" theme="outline" *ngIf="!condition.display" (click)="removeCondition(j, i)"></i>
             </div>
         </li>
 
         <li class="menu-item edit-item" *ngIf="showExtraCondition">
-            <i class="anticon left" [class.anticon-caret-right]="!editConditions.length" [class.anticon-caret-down]="editConditions.length"></i>
+            <i class="left" nz-icon [type]="editConditions.length ? 'caret-down' : 'caret-right'" theme="outline"></i>
             <span (click)="startEditCondition()" style="padding: 4px; display: inline-block; cursor: pointer">添加自定义筛选</span>
         </li>
 
@@ -223,7 +226,7 @@
 
                 <input *ngSwitchDefault nz-input [(ngModel)]="condition.value" (ngModelChange)="valueChange(condition)"/>
             </div>
-            <i class="anticon anticon-delete right" (click)="removeCondition(index)"></i>
+            <i class="right" nz-icon type="delete" theme="outline" (click)="removeCondition(index)"></i>
         </li>
 
         <li class="menu-item deit-item btn-item-group" *ngIf="editConditions.length">
@@ -295,7 +298,7 @@
             </nz-time-picker>
 
             <nz-select *ngSwitchCase="'select'"
-                        [nzShowSearch]="item[0].showSearch"
+                       [nzShowSearch]="item[0].showSearch"
                        [(ngModel)]="item[0].value"
                        (ngModelChange)="valueChange(item[0])"
                        [nzMode]="item[0].selectModel"
