@@ -56,7 +56,7 @@
                     <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="item.$loading" nzDisabled nzCustomContent>
-                    <i nz-icon type="loading" theme="outline" [nzSpin]="true"></i> Loading Data...
+                    <i nz-icon type="loading" theme="outline"></i> Loading Data...
                 </nz-option>
                 <nz-option *ngIf="showCreate(header)" nzCustomContent>
                     <div (click)="onCreate(header, item)">
@@ -95,7 +95,7 @@
                     <nz-option *ngFor="let option of header.options" [nzLabel]="option.label" [nzValue]="option.value" [nzDisabled]="option.disable"></nz-option>
                 </ng-container>
                 <nz-option *ngIf="newItem.$loading" nzDisabled nzCustomContent>
-                    <i nz-icon type="loading" theme="outline" [nzSpin]="true"></i> Loading Data...
+                    <i nz-icon type="loading" theme="outline"></i> Loading Data...
                 </nz-option>
                 <nz-option *ngIf="showCreate(header)" nzCustomContent>
                     <div (click)="onCreate(header)">

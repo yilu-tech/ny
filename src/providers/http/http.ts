@@ -1,21 +1,21 @@
-import { Injectable } from '@angular/core';
-import { HttpKernel } from './http.kernel';
+import { Injectable, InjectionToken, Inject, Optional } from '@angular/core';
+import { HttpKernel, HttpMiddleware } from './http.kernel';
 import { HttpRequest } from './http.request';
+
+export const HTTP_MIDDLEWARE = new InjectionToken<HttpMiddleware[]>('http.middleware');
 
 @Injectable()
 export class Http {
 
-    private _middleware: any[];
+    constructor(private httpKernel: HttpKernel, @Optional() @Inject(HTTP_MIDDLEWARE) private middleware: HttpMiddleware[]) {
 
-    constructor(private httpKernel: HttpKernel) {
     }
 
     public static middleware(...argv) {
-        return {
-            provide: Http,
-            useFactory: (httpKernel: HttpKernel) => Object.assign(new Http(httpKernel), {_middleware: argv}),
-            deps: [HttpKernel]
-        };
+        return [
+            Http,
+            { provide: HTTP_MIDDLEWARE, useValue: argv }
+        ];
     }
 
     public get(url: string, params: any = {}, options: any = {}): Promise<any> {
@@ -54,6 +54,6 @@ export class Http {
     }
 
     public request(method: string, url: string, options: any = {}): Promise<any> {
-        return this.httpKernel.next(new HttpRequest(method, url, options), this._middleware);
+        return this.httpKernel.next(new HttpRequest(method, url, options), this.middleware);
     }
 }
