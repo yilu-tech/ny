@@ -18,7 +18,7 @@ export class OauthRequest implements HttpMiddleware {
             if (errorResponse.status == 401) {
                 this.authToken.clear();
             }
-            return errorResponse;
+            throw errorResponse;
         });
     }
 }
