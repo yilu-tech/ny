@@ -9,7 +9,32 @@ export const value = (item: any, header: any) => {
     }
     if ('map' in header) {
         for (let item of header.map) {
-            if (item.value == value) return item.label;
+            switch (item.operator) {
+                case '<':
+                    if (value < item.value) return item.label;
+                    break;
+                case '<=':
+                    if (value <= item.value) return item.label;
+                    break;
+                case '>':
+                    if (value > item.value) return item.label;
+                    break;
+                case '>=':
+                    if (value >= item.value) return item.label;
+                    break;
+                case '!=':
+                    if (value != item.value) return item.label;
+                    break;
+                case '&':
+                    if (value & item.value) return item.label;
+                    break;
+                case '|':
+                    if (value | item.value) return item.label;
+                    break;
+                default:
+                    if (value == item.value) return item.label;
+                    break;
+            }
         }
     }
     if ('decimal' in header) {
@@ -39,7 +64,7 @@ export class Export {
 
         utils.book_append_sheet(wb, ws, 'Sheet1');
 
-        const wbout = write(wb, {bookType: this.type, type: 'binary'});
+        const wbout = write(wb, { bookType: this.type, type: 'binary' });
 
         this._saveAs(new Blob([this._s2ab(wbout)]), this.filename);
     }
