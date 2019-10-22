@@ -155,34 +155,39 @@ export class Collection {
     }
 
     public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', headers: Array<any> = null, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {
-        let _export = new Export(filename, filetype);
+        return new Promise((resolve, reject) => {
+            let _export = new Export(filename, filetype);
 
-        headers = headers || this.headers;
+            headers = headers || this.headers;
 
-        if (type === 'all') {
-            let body = this.makeOptions();
-            body.extras = {type};
-            if (this.onExportLoad) {
-                this.onExportLoad(body);
-            }
-            delete body.size;
-            this.request('post', this.uri, {body: body}).then((ret) => {
-                if (!Array.isArray(ret)) {
-                    if (ret.footer) {
-                        ret.data.push(...ret.footer);
-                    }
-                    ret = ret.data;
+            if (type === 'all') {
+                let body = this.makeOptions();
+                body.extras = {type};
+                if (this.onExportLoad) {
+                    this.onExportLoad(body);
                 }
-                _export.write(ret, headers);
-            });
-        }
-        if (type === 'page') {
-            _export.write(this.data, headers);
-        }
+                delete body.size;
+                this.request('post', this.uri, {body: body}).then((ret) => {
+                    if (!Array.isArray(ret)) {
+                        if (ret.footer) {
+                            ret.data.push(...ret.footer);
+                        }
+                        ret = ret.data;
+                    }
+                    _export.write(ret, headers);
+                    resolve();
+                });
+            }
+            if (type === 'page') {
+                _export.write(this.data, headers);
+                resolve();
+            }
 
-        if (type === 'checked') {
-            _export.write(this.checkedItems, headers);
-        }
+            if (type === 'checked') {
+                _export.write(this.checkedItems, headers);
+                resolve();
+            }
+        });
     }
 
     public serverExport(filename?: string, type: 'all' | 'page' | 'checked' = 'all', extras: any = {}, headers: Array<any> = null, filetype: 'xls' | 'csv' = 'xls'): Promise<string> {
