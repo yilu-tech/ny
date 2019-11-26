@@ -1,5 +1,31 @@
 import { utils, write } from 'xlsx';
 
+export function assert(a, operator: string, b) {
+    switch (operator) {
+        case '<':
+            return a < b;
+        case '<=':
+            return a <= b;
+        case '>':
+            return a > b;
+        case '>=':
+            return a >= b;
+        case '!=':
+        case '<>':
+            return a != b;
+        case '&':
+            return (a & b) === b;
+        case '|':
+            return (a | b) > 0;
+        case '===':
+            return a === b;
+        case '=':
+        case '==':
+        default:
+            return a == b;
+    }
+}
+
 export const value = (item: any, header: any) => {
     let value: any;
     if (Array.isArray(header.value)) {
@@ -8,34 +34,17 @@ export const value = (item: any, header: any) => {
         value = item[header.value];
     }
     if ('map' in header) {
+        let labels = [];
         for (let item of header.map) {
-            switch (item.operator) {
-                case '<':
-                    if (value < item.value) return item.label;
-                    break;
-                case '<=':
-                    if (value <= item.value) return item.label;
-                    break;
-                case '>':
-                    if (value > item.value) return item.label;
-                    break;
-                case '>=':
-                    if (value >= item.value) return item.label;
-                    break;
-                case '!=':
-                    if (value != item.value) return item.label;
-                    break;
-                case '&':
-                    if (value & item.value) return item.label;
-                    break;
-                case '|':
-                    if (value | item.value) return item.label;
-                    break;
-                default:
-                    if (value == item.value) return item.label;
-                    break;
+            if (!assert(value, item.operator, item.value)) {
+                continue;
             }
+            if (!header.hasMany) {
+                return item.label;
+            }
+            labels.push(item.label);
         }
+        return labels.join(header.separator);
     }
     if ('decimal' in header) {
         return (parseFloat(value) || 0).toFixed(header.decimal);
@@ -108,8 +117,4 @@ export class Export {
             window.URL.revokeObjectURL(url);
         }
     }
-}
-
-export class Import {
-
 }
