@@ -15,8 +15,16 @@ export class HttpRequest {
     private _responseType: 'arraybuffer' | 'blob' | 'json' | 'text' = 'json';
 
     constructor(method?: string, url?: string, options?: any) {
-        this.setMethod(method).setUrl(url);
+        if (method) {
+            this.setMethod(method);
+        }
+        if (url) {
+            this.setUrl(url);
+        }
         if (options) {
+            if (options.params) {
+                Object.assign(options.params, this.getParams())
+            }
             this.setOptions(options);
         }
     }
@@ -39,7 +47,10 @@ export class HttpRequest {
 
     public setUrl(url: string) {
         this._urlInfo = urlParser(url);
-        return this.setParams(queryStrParser(this._urlInfo.query));
+        if (this._urlInfo.query) {
+            this.setParams(queryStrParser(this._urlInfo.query));
+        }
+        return this;
     }
 
     public getMethod() {
@@ -75,7 +86,7 @@ export class HttpRequest {
             [key: string]: string | string[];
         };
         params?: {
-            [key: string]: string;
+            [key: string]: string | string[];
         };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     }) {
