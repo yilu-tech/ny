@@ -1,13 +1,14 @@
 import { HttpHeaders } from '@angular/common/http';
+import { urlParser, buildUrl, buildQueryStr, queryStrParser, UrlInfo } from './url.resolver';
 
 export class HttpRequest {
-    private _url: string;
+    private _urlInfo: UrlInfo;
 
     private _method: string;
 
     private _headers: { [key: string]: string | string[] } = {};
 
-    private _params: { [key: string]: string } = {};
+    private _params: { [key: string]: string | string[] } = {};
 
     private _body: any | FormData;
 
@@ -21,12 +22,24 @@ export class HttpRequest {
     }
 
     public getUrl(): string {
-        return this._url;
+        return buildUrl(
+            this._urlInfo.scheme,
+            this._urlInfo.userInfo,
+            this._urlInfo.domain,
+            this._urlInfo.port,
+            this._urlInfo.path,
+            null,
+            this._urlInfo.fragment,
+        );
+    }
+
+    public getUrlInfo() {
+        return this._urlInfo;
     }
 
     public setUrl(url: string) {
-        this._url = url;
-        return this;
+        this._urlInfo = urlParser(url);
+        return this.setParams(queryStrParser(this._urlInfo.query));
     }
 
     public getMethod() {
@@ -115,17 +128,33 @@ export class HttpRequest {
         return this._params;
     }
 
-    public setParams(params: { [key: string]: string }) {
+    public setParams(params: { [key: string]: string | string[] }) {
         this._params = params;
         return this;
+    }
+
+    public has(key: string) {
+        return this.hasParams(key) || this.hasBody(key);
     }
 
     public hasParams(key: string): boolean {
         return key in this._params;
     }
 
-    public addParams(key: string, value: string) {
+    public addParams(key: string, value: string | string[]) {
         this._params[key] = value;
+        return this;
+    }
+
+    public appendParams(key: string, value: string) {
+        if (!this.hasParams(key)) {
+            return this.addParams(key, value);
+        }
+        if (Array.isArray(this._params[key])) {
+            (<Array<string>>this._params[key]).push(value);
+        } else {
+            this.addParams(key, [<string>this._params[key], value]);
+        }
         return this;
     }
 
@@ -137,11 +166,7 @@ export class HttpRequest {
     }
 
     public getQueryString() {
-        let string = '';
-        for (let key in this._params) {
-            string += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(this._params[key]);
-        }
-        return string.substring(1);
+        return buildQueryStr(this._params);
     }
 
     public isFormBody(): boolean {
