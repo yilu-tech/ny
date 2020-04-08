@@ -11,7 +11,7 @@ export class OauthRequest implements HttpMiddleware {
     }
 
     handle(request: HttpRequest, next: (request: HttpRequest) => Promise<any>): Promise<any> {
-        if (!this.authToken.exists()) {
+        if (this.authToken.exists()) {
             request.addHeader('Authorization', this.authToken.getAuthorization());
         }
         return next(request).catch((errorResponse) => {

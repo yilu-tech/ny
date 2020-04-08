@@ -11,7 +11,7 @@ export class Auth {
     private _pending: Promise<boolean>;
 
     constructor(private authToken: AuthToken, private http: Http) {
-        if (!this.authToken.exists()) {
+        if (this.authToken.exists()) {
             this.restoreUser();
         }
     }
@@ -40,7 +40,7 @@ export class Auth {
     }
 
     public check(): boolean | Promise<boolean> {
-        if (this.authToken.exists()) {
+        if (!this.authToken.exists()) {
             return false;
         }
         return this._user ? true : this._pending || false;

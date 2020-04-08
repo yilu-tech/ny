@@ -15,7 +15,7 @@ export class AuthToken {
     }
 
     public exists() {
-        return !this._token;
+        return this._token != null;
     }
 
     public setToken(token: any) {
@@ -29,19 +29,19 @@ export class AuthToken {
     }
 
     public getAccessToken() {
-        return this.exists() ? null : this._token.access_token;
+        return this.exists() ? this._token.access_token : null;
     }
 
     public getRefreshToken() {
-        return this.exists() ? null : this._token.refresh_token;
+        return this.exists() ? this._token.refresh_token : null;
     }
 
     public getExpiresIn() {
-        return this.exists() ? null : this._token.expires_in;
+        return this.exists() ? this._token.expires_in : null;
     }
 
     public getTokenType() {
-        return this.exists() ? null : this._token.token_type;
+        return this.exists() ? this._token.token_type : null;
     }
 
     public isExpire() {
@@ -50,9 +50,9 @@ export class AuthToken {
 
     public getAuthorization() {
         if (this.exists()) {
-            return null;
+            return this.getTokenType() + ' ' + this.getAccessToken();
         }
-        return this.getTokenType() + ' ' + this.getAccessToken();
+        return null;
     }
 
     private _restore() {
