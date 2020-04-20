@@ -7,9 +7,9 @@ import { CONFIG } from '../../config';
 export class CompleteUrl implements HttpMiddleware {
 
     handle(request: HttpRequest, next: (request: HttpRequest) => Promise<any>): Promise<any> {
-        const url = request.getUrl();
-        if (/^\/?([\w-]+\/?)+(\?(\w+(=.*)?&?)+)?$/.test(url)) {
-            request.setUrl(CONFIG.baseUrl + '/' + url.trim());
+        let urlInfo = request.getUrlInfo();
+        if (!urlInfo.domain) {
+            request.setUrl(CONFIG.baseUrl + '/' + urlInfo.path);
         }
         return next(request);
     }
