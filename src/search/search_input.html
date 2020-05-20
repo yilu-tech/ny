@@ -57,7 +57,6 @@
                     </nz-input-number>
                     
                     <nz-date-picker *ngSwitchCase="'date'"
-                                    [hidden]="item[0].hidden"
                                     [(ngModel)]="condition.value"
                                     (ngModelChange)="valueChange(condition, false)"
                                     [nzDisabledDate]="condition.range"
