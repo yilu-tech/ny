@@ -1,0 +1,223 @@
+:host {
+    display: flex;
+    position: relative;
+}
+
+.control {
+    display: inline-block;
+    margin-right: 8px;
+    white-space: nowrap;
+
+    & > label {
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    & > .connector {
+        display: inline-block;
+        margin: 0 8px;
+    }
+
+    nz-select, nz-tree-select {
+        min-width: 128px;
+    }
+}
+
+.disabled {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+    background-color: #FFFFFF;
+}
+
+.search-area {
+    display: flex;
+    flex: 4;
+    max-width: 720px;
+    min-width: 256px;
+    position: relative;
+    align-items: flex-end;
+
+    & > .input {
+        position: relative;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        padding: 2px 32px 2px 4px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-flow: wrap;
+        line-height: 20px;
+        min-height: 32px;
+        cursor: text;
+
+        &:hover {
+            border-color: #40a9ff;
+        }
+
+        & > i {
+            position: absolute;
+            top: 6px;
+            right: 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        & > input {
+            border: none;
+            flex: 1;
+            outline: none;
+        }
+
+        & > .key-item {
+            border: 1px solid #e2e2e2;
+            background: #f8f8f8;
+            margin: 1px 4px 1px 0;
+            cursor: pointer;
+
+            & > span {
+                margin: 0 4px;
+            }
+
+            & > i {
+                line-height: 20px;
+            }
+        }
+
+        & > ul {
+            left: -1px;
+
+            & > li {
+                padding: 2px 16px;
+                cursor: pointer;
+                position: relative;
+                transition: background .3s ease;
+
+                &:after {
+                    font-family: anticon;
+                    text-rendering: optimizeLegibility;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    content: "\e632";
+                    color: transparent;
+                    display: inline-block;
+                    font-size: 12px;
+                    transition: all .2s ease;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    right: 12px;
+                    font-weight: 700;
+                    text-shadow: 0 0.1px 0, 0.1px 0 0, 0 -0.1px 0, -0.1px 0;
+                }
+
+                &:hover {
+                    background-color: #e6f7ff;
+                    color: rgba(0, 0, 0, .65);
+                }
+
+                &:hover:after {
+                    color: #ddd;
+                }
+            }
+
+            .active {
+                background-color: #e6f7ff;
+            }
+        }
+    }
+
+    & > nz-button-group {
+        margin-left: 8px;
+    }
+
+    .focus {
+        border-color: #40a9ff !important;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+
+    .show {
+        display: block;
+    }
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 100%;
+    max-height: 512px;
+    z-index: 800;
+    display: none;
+    overflow: auto;
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.175);
+}
+
+.dropdown-menu {
+    .checked {
+        /deep/ .condition-label {
+            font-weight: bold;
+        }
+
+        &:before {
+            content: "\2714";
+            position: absolute;
+            left: 8px;
+        }
+    }
+
+    .left {
+        position: absolute;
+        left: 8px;
+        top: 14px;
+        line-height: 1;
+    }
+
+    .right {
+        position: absolute;
+        right: 8px;
+        top: 14px;
+        cursor: pointer;
+    }
+}
+
+.search-box {
+    display: inline-block;
+}
+
+/deep/ .condition-item {
+    display: flex;
+    position: relative;
+    border-top: 1px solid #cccccc;
+    line-height: 32px;
+    padding: 2px 32px;
+
+    &:first-child {
+        border-top: none;
+    }
+
+    .condition-label {
+        display: inline-block;
+        width: 128px;
+        cursor: pointer;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .condition-operator {
+        display: inline-block;
+        margin: 0 8px;
+    }
+
+    .condition-input {
+        display: inline-block;
+        min-width: 120px;
+        margin: 0 8px;
+    }
+}

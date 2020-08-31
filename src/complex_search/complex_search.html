@@ -1,0 +1,122 @@
+<div *ngIf="!isSimple" class="search-area">
+    <div class="input" [class.focus]="keywordFocus" (click)="keywordsInput.focus();keywordFocus = true">
+        <div class="key-item" *ngFor="let item of conditions.actives()">
+            <span>{{item.toString()}}</span>
+            <i nz-icon type="close" theme="outline" (click)="item.check()"></i>
+        </div>
+
+        <input #keywordsInput type="text" [(ngModel)]="keyword" (keyup)="keywordChange($event)" (blur)="blur()"/>
+
+        <i nz-icon type="search" theme="outline" (click)="collection.load()"></i>
+
+        <ul class="dropdown-menu" [class.show]="keyword && stringFields.length">
+            <li *ngFor="let item of stringFields; let i = index" [class.active]="i === kIndex" (mousedown)="addKeywordCondition(item)">
+                <label>{{item.label}}</label>
+                <i class="anticon anticon-check"></i>
+            </li>
+        </ul>
+    </div>
+
+    <nz-button-group>
+        <button nz-button (click)="bindHiddenListener($event)">
+            <span>筛选</span>
+            <i nz-icon type="down" theme="outline"></i>
+        </button>
+        <button nz-button [nzLoading]="collection.pending" (click)="collection.load()">
+            <i nz-icon type="reload" theme="outline"></i>
+        </button>
+    </nz-button-group>
+
+    <ul class="dropdown-menu" [class.show]="dropDownVisible" (click)="$event.stopPropagation()">
+        <li class="condition-item" *ngFor="let item of conditions.items; let i = index" [class.checked]="item.checked">
+            <ng-container [ngTemplateOutlet]="item.viewTemplate" [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+            <i nz-icon class="right" type="delete" theme="outline" *ngIf="item.closeable" (click)="conditions.remove(item)"></i>
+        </li>
+    </ul>
+</div>
+
+<ng-container *ngIf="isSimple && collection.initialed">
+    <div class="condition-item" *ngFor="let item of conditions.items">
+        <ng-container [ngTemplateOutlet]="item.viewTemplate" [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+    </div>
+    <div class="search-box" *ngIf="showSearchBtn">
+        <button nz-button [nzLoading]="collection.pending" (click)="collection.load()">
+            <span>搜索</span>
+        </button>
+    </div>
+</ng-container>
+
+<ng-content></ng-content>
+
+<ng-template conditionTpl="checkbox" type="default" [isContainer]="true" let-condition>
+    <span class="condition-label" (click)="condition.check()">{{condition.label}}</span>
+</ng-template>
+
+<ng-template conditionTpl="checkbox" type="simple" [isContainer]="true" let-condition>
+    <label nz-checkbox [(ngModel)]="condition.value">{{condition.label}}</label>
+</ng-template>
+
+<ng-template conditionTpl="string" type="default" [isContainer]="true" let-condition>
+    <span class="condition-label" (click)="condition.check()">{{condition.label}}</span>
+    <span class="condition-operator"><i>{{condition.operatorLabel}}</i></span>
+    <span class="condition-input">{{condition.valueToString()}}</span>
+</ng-template>
+
+<ng-template conditionTpl="mixed" type="default" [isContainer]="true" let-condition>
+    <span class="condition-label" (click)="condition.check()">{{condition.label}}</span>
+    <span class="condition-operator" *ngIf="!condition.hiddenOperator"><i>{{condition.operatorLabel}}</i></span>
+    <ng-container [ngTemplateOutlet]="condition.inputTemplate" [ngTemplateOutletContext]="{$implicit: condition}"></ng-container>
+</ng-template>
+
+<ng-template conditionTpl="mixed" type="simple" [isContainer]="true" let-condition>
+    <span class="item-title" (click)="condition.check()">{{condition.label}}</span>
+    <ng-container [ngTemplateOutlet]="condition.inputTemplate" [ngTemplateOutletContext]="{$implicit: condition}"></ng-container>
+</ng-template>
+
+<ng-template conditionTpl="string" let-condition>
+    <input class="condition-input" nz-input [(ngModel)]="condition.value"/>
+</ng-template>
+
+<ng-template conditionTpl="select" let-condition>
+    <nz-select class="condition-input" [(ngModel)]="condition.value" [nzShowSearch]="true" [nzDropdownMatchSelectWidth]="false">
+        <nz-option *ngFor="let option of condition.options" [nzLabel]="option.label" [nzValue]="option.value">{{option.label}}</nz-option>
+    </nz-select>
+</ng-template>
+
+<ng-template conditionTpl="select-in" let-condition>
+    <nz-select class="condition-input" [(ngModel)]="condition.value" [nzShowSearch]="true" [nzDropdownMatchSelectWidth]="false" nzMode="multiple">
+        <nz-option *ngFor="let option of condition.options" [nzLabel]="option.label" [nzValue]="option.value">{{option.label}}</nz-option>
+    </nz-select>
+</ng-template>
+
+<ng-template conditionTpl="numeric" let-condition>
+    <nz-input-number class="condition-input" [(ngModel)]="condition.value" [nzMin]="condition.min" [nzMax]="condition.max"></nz-input-number>
+</ng-template>
+
+<ng-template conditionTpl="numeric-in" let-condition>
+    <nz-input-number [(ngModel)]="condition.value[0]" [nzMin]="condition.min" [nzMax]="condition.value[1]"></nz-input-number>
+    <span class="connector">~</span>
+    <nz-input-number [(ngModel)]="condition.value[1]" [nzMin]="condition.value[0]" [nzMax]="condition.max"></nz-input-number>
+</ng-template>
+
+<ng-template conditionTpl="date" let-condition>
+    <nz-date-picker [(ngModel)]="condition.value" [nzShowTime]="condition.showTime" [nzRanges]="condition.range"></nz-date-picker>
+</ng-template>
+
+<ng-template conditionTpl="date-in" let-condition>
+    <nz-range-picker [(ngModel)]="condition.value" [nzShowTime]="condition.showTime"></nz-range-picker>
+</ng-template>
+
+<ng-template conditionTpl="time" let-condition>
+    <nz-time-picker [(ngModel)]="condition.value"></nz-time-picker>
+</ng-template>
+
+<ng-template conditionTpl="time-in" let-condition>
+    <nz-time-picker [(ngModel)]="condition.value[0]"></nz-time-picker>
+    <span class="connector">~</span>
+    <nz-time-picker [(ngModel)]="condition.value[1]"></nz-time-picker>
+</ng-template>
+
+<ng-template conditionTpl="tree-select" let-condition>
+    <nz-tree-select [(ngModel)]="condition.value" [nzNodes]="condition.options" [nzAllowClear]="false" [nzAsyncData]="true" (nzExpandChange)="condition.childNodes && condition.childNodes($event)" [nzDropdownMatchSelectWidth]="false" [nzDropdownStyle]="{'max-height': '260px', 'min-width': '200px'}"></nz-tree-select>
+</ng-template>

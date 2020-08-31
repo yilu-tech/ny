@@ -9,6 +9,9 @@ import { NyRunNumber } from './animate/run_number';
 import { NyTable } from './table/table';
 import { NyColumn } from './table/column';
 import { SearchInput } from './search/search_input';
+import { ComplexSearch } from './complex_search/complex_search';
+import { ConditionTpl } from './complex_search/condition_tpl';
+import { Collection } from './complex_search/collection';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgZorroAntdModule, NyFormModule],
@@ -19,7 +22,9 @@ import { SearchInput } from './search/search_input';
         NyRunNumber,
         NyTable,
         NyColumn,
-        SearchInput
+        SearchInput,
+        ConditionTpl,
+        ComplexSearch
     ],
 
     exports: [
@@ -30,7 +35,13 @@ import { SearchInput } from './search/search_input';
         NyTable,
         NyColumn,
         NyRunNumber,
-        SearchInput
+        SearchInput,
+        ConditionTpl,
+        ComplexSearch
+    ],
+
+    providers: [
+        Collection
     ]
 })
 export class NyModule {
