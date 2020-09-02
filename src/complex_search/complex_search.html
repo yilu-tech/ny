@@ -36,8 +36,10 @@
 </div>
 
 <ng-container *ngIf="isSimple && collection.initialed">
-    <div class="condition-item" *ngFor="let item of conditions.items">
-        <ng-container [ngTemplateOutlet]="item.viewTemplate" [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+    <div class="condition-container">
+        <div class="condition-item" *ngFor="let item of conditions.items">
+            <ng-container [ngTemplateOutlet]="item.viewTemplate" [ngTemplateOutletContext]="{$implicit: item}"></ng-container>
+        </div>
     </div>
     <div class="search-box" *ngIf="showSearchBtn">
         <button nz-button [nzLoading]="collection.pending" (click)="collection.load()">
@@ -69,7 +71,7 @@
 </ng-template>
 
 <ng-template conditionTpl="mixed" type="simple" [isContainer]="true" let-condition>
-    <span class="item-title" (click)="condition.check()">{{condition.label}}</span>
+    <span class="condition-label" (click)="condition.check()">{{condition.label}}</span>
     <ng-container [ngTemplateOutlet]="condition.inputTemplate" [ngTemplateOutletContext]="{$implicit: condition}"></ng-container>
 </ng-template>
 

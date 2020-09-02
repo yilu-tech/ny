@@ -159,6 +159,22 @@
 }
 
 .dropdown-menu {
+    .condition-item {
+        padding: 2px 32px;
+        border-top: 1px solid #cccccc;
+
+        &:first-child {
+            border-top: none;
+        }
+
+        .condition-label {
+            cursor: pointer;
+            width: 128px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
     .checked {
         /deep/ .condition-label {
             font-weight: bold;
@@ -190,34 +206,28 @@
     display: inline-block;
 }
 
+.condition-container {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+
+    .condition-item {
+        margin-right: 16px;
+    }
+}
+
 /deep/ .condition-item {
     display: flex;
-    position: relative;
-    border-top: 1px solid #cccccc;
     line-height: 32px;
-    padding: 2px 32px;
 
-    &:first-child {
-        border-top: none;
-    }
-
-    .condition-label {
+    .condition-label, .condition-operator {
         display: inline-block;
-        width: 128px;
-        cursor: pointer;
-        text-overflow: ellipsis;
         white-space: nowrap;
-        overflow: hidden;
-    }
-
-    .condition-operator {
-        display: inline-block;
-        margin: 0 8px;
+        margin-right: 8px;
     }
 
     .condition-input {
         display: inline-block;
-        min-width: 120px;
-        margin: 0 8px;
+        width: 128px;
     }
 }

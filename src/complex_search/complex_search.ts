@@ -65,7 +65,6 @@ export class ComplexSearch implements OnChanges, OnInit {
     }
 
     public ngOnInit() {
-        console.log(this);
         this.collectionEmitter.emit(this.collection);
         this.collection.resetHeader = () => this.initControls(false);
         this.initControls();
@@ -102,7 +101,7 @@ export class ComplexSearch implements OnChanges, OnInit {
             if (field.itype === 'string' || field.ctype === 'keyword') {
                 this.stringFields.push(field);
             }
-            if (field.ctype && field.ctype !== 'keyword') {
+            if (this.isSimple || (field.ctype && field.ctype !== 'keyword')) {
                 this.conditions.add(field.newCondition());
             }
         });
