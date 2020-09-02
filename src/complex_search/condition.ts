@@ -329,7 +329,7 @@ export class DateCondition extends NumericCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => date(value, this.format);
+    public formatter = (value) => date(this.format, value);
 
     public valueToString() {
         let value = this.formatValue();
@@ -348,7 +348,7 @@ export class DateRangeCondition extends NumericRangCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => date(value, this.format);
+    public formatter = (value) => date(this.format, value);
 
     public valueToString() {
         return this.formatValue();

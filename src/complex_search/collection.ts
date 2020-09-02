@@ -87,7 +87,7 @@ export class Collection {
 
     private _conditions = new ConditionGroup();
 
-    private _loadTimer: number;
+    private _loadTimer: any;
     private _loadObservable: Subject<any>;
 
     constructor(protected http: Http) {
