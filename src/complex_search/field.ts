@@ -11,7 +11,7 @@ import {
     NumericRangCondition
 } from './condition';
 
-const FIELD_PROPERTIES = ['name', 'label', 'itype', 'ctype', 'isFullLabel', 'custom', 'min', 'max', 'format', 'options'];
+const FIELD_PROPERTIES = ['name', 'label', 'itype', 'ctype', 'isFullLabel', 'custom', 'min', 'max', 'format', 'options', 'required'];
 
 export declare interface FieldAble {
     name: string;
@@ -41,6 +41,7 @@ export class Field implements FieldAble {
     public isFullLabel: boolean;
 
     public checked: boolean;
+    public required: boolean;
     public disabled: boolean;
 
     public children: Field[];
@@ -112,6 +113,7 @@ export class Field implements FieldAble {
 
     private createCondition(condition, value, operator) {
         condition = new condition(this.path(), this.toString(), value, operator);
+        condition.required = this.required;
         if (this.min) {
             condition.min = this.min;
         }

@@ -30,6 +30,7 @@ export class Condition {
     public operator: string;
 
     public hidden: boolean;
+    public required: boolean;
     public disabled: boolean;
     public closeable: boolean;
 
