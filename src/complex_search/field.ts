@@ -46,12 +46,15 @@ export class Field implements FieldAble {
 
     public children: Field[];
 
+    public conditionOptions;
+
     constructor(option: any = {}, parent: FieldAble = null) {
         for (let key of FIELD_PROPERTIES) {
             if (key in option) {
                 this[key] = option[key];
             }
         }
+        this.conditionOptions = option;
         this.parent = parent;
     }
 
@@ -71,7 +74,10 @@ export class Field implements FieldAble {
         return field;
     }
 
-    public newCondition(value?: any, operator: string = '=') {
+    public newCondition(value?: any, operator?: string) {
+        if (operator == null) {
+            operator = this.conditionOptions.operator || '=';
+        }
         switch (this.ctype || this.itype) {
             case 'numeric':
                 return this.createCondition(NumericCondition, value, operator);
