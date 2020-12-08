@@ -63,7 +63,7 @@
     <div #THR class="tr" *ngFor="let item of collection.footers; let row = index">
         <th class="th lh" #LH #HCELL *ngIf="showIndex">Σ</th>
         <th class="th" #HCELL *ngIf="collection.showCheckbox"></th>
-        <th class="th" #HCELL *ngFor="let header of collection.headers; let col = index">{{item[col]}}</th>
+        <th class="th" #HCELL *ngFor="let header of headers; let col = index">{{item[col]}}</th>
     </div>
 </div>
 
