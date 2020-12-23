@@ -11,7 +11,6 @@ export interface Collection {
     onLoad?: Function;
     onExportLoad?: Function;
     onChange?: Function;
-    addWhere?: Function;
     resetHeader?: Function;
 }
 
@@ -88,6 +87,7 @@ export class Collection {
     private _conditions = new ConditionGroup();
 
     private _loadTimer: any;
+    private _loadPromise: Promise<any>;
     private _loadObservable: Subject<any>;
 
     constructor(protected http: Http) {
@@ -101,10 +101,10 @@ export class Collection {
             this.onInit();
         }
 
-        this.load();
+        this.loadReduce(0);
     }
 
-    public where(column: any, value?: string, operator?: string) {
+    public where(column: any, value?: any, operator?: string) {
         if (!(column instanceof Field)) {
             column = this.model.getProperty(column);
         }
@@ -114,6 +114,9 @@ export class Collection {
     }
 
     public loadReduce(delay: number): Promise<any> {
+        if (this._loadPromise) {
+            return this._loadPromise;
+        }
         if (this._loadObservable == null) {
             this._loadObservable = new Subject<any>();
         }
@@ -122,29 +125,33 @@ export class Collection {
         }
         this._loadTimer = setTimeout(() => this.load().then((e) => {
             this._loadTimer = null;
-            if (this._loadObservable) {
-                this._loadObservable.next(e);
-                this._loadObservable = null;
-            }
+            this._loadObservable.next(e);
+            this._loadObservable = null;
+        }).catch(err => {
+            this._loadTimer = null;
+            this._loadObservable.error(err);
+            this._loadObservable = null;
         }), delay);
         return this._loadObservable.toPromise();
     }
 
     public load(): Promise<any> {
+        if (this._loadPromise) {
+            return this._loadPromise;
+        }
         if (!this.initialed) {
             return Promise.resolve(this);
         }
 
         let option = this.makeOptions();
-
         if (this.onLoad) {
             this.onLoad(option);
         }
 
         this.pending = true;
         this.changed = false;
-
-        return this.http.request('post', this.uri, {body: option}).then((ret) => {
+        return this._loadPromise = this.http.request('post', this.uri, {body: option}).then((ret) => {
+            this._loadPromise = null;
             this.setData(ret);
 
             this.pending = false;
@@ -158,6 +165,7 @@ export class Collection {
             }
             return this;
         }).catch((err) => {
+            this._loadPromise = null;
             this.pending = false;
             throw err;
         });

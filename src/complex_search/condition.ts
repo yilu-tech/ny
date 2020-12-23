@@ -15,7 +15,7 @@ const OPERATOR_CN = {
 
 const DATA_TYPE_OPERATORS = {
     'string': ['like', '=', 'not like', '<>'],
-    'numeric': ['=', '<>', '>', '>=', '<', '<=', 'in'],
+    'numeric': ['=', '<>', '>', '>=', '<', '<='],
     'boolean': ['=', '<>'],
     'select': ['=', '<>'],
     'tree-select': ['=', '<>'],
@@ -121,7 +121,7 @@ export class Condition {
     }
 
     public operators(): string[] {
-        let type = this.type.indexOf('-in') > 0 ? '*-in' : this.type;
+        let type = /-in$/.test(this.type) ? '*-in' : this.type;
         return DATA_TYPE_OPERATORS[type] || DATA_TYPE_OPERATORS.boolean;
     }
 
@@ -141,7 +141,7 @@ export class Condition {
         return this.label + ' ' + this.operatorLabel + ' ' + this.valueToString();
     }
 
-    protected formatValue() {
+    public formatValue() {
         if (this.formatter) {
             return this.formatter(this.value);
         }
@@ -150,6 +150,34 @@ export class Condition {
 
     protected emit() {
         this._listener.forEach((fn) => fn(this));
+    }
+}
+
+export class MultiCondition extends Condition {
+    public setValue(value) {
+        if (!Array.isArray(value)) {
+            value = [];
+        }
+        return super.setValue(value);
+    }
+
+    public operators(): string[] {
+        return DATA_TYPE_OPERATORS.boolean;
+    }
+
+    public valueToString(): any {
+        return this._value.join();
+    }
+
+    public isEmpty(): boolean {
+        return this._value.length === 0;
+    }
+
+    public formatValue() {
+        if (this.formatter) {
+            return this._value.map(this.formatter);
+        }
+        return this.value;
     }
 }
 
@@ -187,11 +215,14 @@ export class NumericCondition extends Condition {
     public formatter = (value) => this.format ? number(value, this.format) : value;
 }
 
-export class NumericRangCondition extends Condition {
+export class NumericRangCondition extends MultiCondition {
     public type = 'numeric-in';
 
     public set minValue(value) {
-        this._value[0] = value;
+        if (this._value[0] != value) {
+            this._value[0] = value;
+            this.emit();
+        }
     }
 
     public get minValue() {
@@ -199,7 +230,10 @@ export class NumericRangCondition extends Condition {
     }
 
     public set maxValue(value) {
-        this._value[1] = value;
+        if (this._value[1] != value) {
+            this._value[1] = value;
+            this.emit();
+        }
     }
 
     public get maxValue() {
@@ -241,22 +275,11 @@ export class NumericRangCondition extends Condition {
         return this.maxValue == this.minValue ? 0 : -1;
     }
 
-    public setValue(value: any) {
-        if (value !== this._value) {
-            if (!Array.isArray(value)) {
-                value = [];
-            }
-            this._value = value;
-            this._dirty = true;
-        }
-        return this;
-    }
-
     public valueToString() {
-        return (this.minValue || '*') + ' ~ ' + (this.maxValue || '*');
+        return (this.formatter(this.minValue) || '*') + ' ~ ' + (this.formatter(this.maxValue) || '*');
     }
 
-    public formatter = (value) => this.format ? number(value, this.format) : value;
+    public formatter = (value) => (this.format && value !== null && value !== undefined) ? number(value, this.format) : value;
 }
 
 export class SelectCondition extends Condition {
@@ -278,7 +301,7 @@ export class SelectCondition extends Condition {
 
     protected getValueLabel(value) {
         for (let item of this.options) {
-            if (item.value == this.value) {
+            if (item.value == value) {
                 return item.label;
             }
         }
@@ -286,22 +309,30 @@ export class SelectCondition extends Condition {
     }
 }
 
-export class MultipleSelectCondition extends SelectCondition {
+export class MultipleSelectCondition extends MultiCondition {
     public type = 'select-in';
 
-    public setValue(value: any) {
-        if (value !== this._value) {
-            if (!Array.isArray(value)) {
-                value = [];
-            }
-            this._value = value;
-            this._dirty = true;
-        }
-        return this;
+    public get options() {
+        return this._options;
     }
+
+    public set options(value) {
+        this._options = Array.isArray(value) ? value : [];
+    }
+
+    protected _options: { label: string, value: any }[];
 
     public valueToString() {
         return this.value.map((v) => this.getValueLabel(v)).join();
+    }
+
+    protected getValueLabel(value) {
+        for (let item of this.options) {
+            if (item.value == value) {
+                return item.label;
+            }
+        }
+        return value;
     }
 }
 
@@ -330,14 +361,10 @@ export class DateCondition extends NumericCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => date(this.format, value);
+    public formatter = (value) => (this.format && value !== null && value !== undefined) ? date(this.format, value) : value;
 
     public valueToString() {
-        let value = this.formatValue();
-        if (this.operator === 'in') {
-            return (value[0] || '*') + ' ~ ' + (value[1] || '*');
-        }
-        return value;
+        return this.formatter(this.value);
     }
 }
 
@@ -349,11 +376,7 @@ export class DateRangeCondition extends NumericRangCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => date(this.format, value);
-
-    public valueToString() {
-        return this.formatValue();
-    }
+    public formatter = (value) => (this.format && value !== null && value !== undefined) ? date(this.format, value) : value;
 }
 
 export class TimeCondition extends DateCondition {
