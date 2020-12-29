@@ -11,7 +11,6 @@ import { NyColumn } from './table/column';
 import { SearchInput } from './search/search_input';
 import { ComplexSearch } from './complex_search/complex_search';
 import { ConditionTpl } from './complex_search/condition_tpl';
-import { Collection } from './complex_search/collection';
 
 @NgModule({
     imports: [CommonModule, FormsModule, NgZorroAntdModule, NyFormModule],
@@ -41,7 +40,6 @@ import { Collection } from './complex_search/collection';
     ],
 
     providers: [
-        Collection
     ]
 })
 export class NyModule {

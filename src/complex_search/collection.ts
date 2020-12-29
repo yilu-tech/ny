@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { Http } from '../providers';
 import { Export, value } from '../search/utils';
 import { ConditionGroup } from './condition';
@@ -14,7 +13,6 @@ export interface Collection {
     resetHeader?: Function;
 }
 
-@Injectable()
 export class Collection {
 
     public uri: string;

@@ -52,12 +52,14 @@ export class ComplexSearch implements OnChanges, OnInit {
     @ViewChildren(ConditionTpl) defaultConditionTpl: QueryList<ConditionTpl>;
     @ContentChildren(ConditionTpl) customConditionTpl: QueryList<ConditionTpl>;
 
+    public collection: Collection;
     public conditions: ConditionGroup;
 
     private _hiddenListener: any;
 
-    constructor(public collection: Collection, private http: Http, private renderer: Renderer2, private notificationService: NzNotificationService) {
-        this.conditions = collection.conditions;
+    constructor(private http: Http, private renderer: Renderer2, private notificationService: NzNotificationService) {
+        this.collection = new Collection(http);
+        this.conditions = this.collection.conditions;
     }
 
     public ngOnChanges(changes: SimpleChanges) {
