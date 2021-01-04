@@ -219,8 +219,9 @@ export class NumericRangCondition extends MultiCondition {
     public type = 'numeric-in';
 
     public set minValue(value) {
-        if (this._value[0] != value) {
+        if (this._value[0] !== value) {
             this._value[0] = value;
+            this._checked = !this.isEmpty();
             this.emit();
         }
     }
@@ -230,8 +231,9 @@ export class NumericRangCondition extends MultiCondition {
     }
 
     public set maxValue(value) {
-        if (this._value[1] != value) {
+        if (this._value[1] !== value) {
             this._value[1] = value;
+            this._checked = !this.isEmpty();
             this.emit();
         }
     }
@@ -268,18 +270,27 @@ export class NumericRangCondition extends MultiCondition {
     protected _max: any;
     protected _format: any;
 
-    protected compare() {
-        if (this.maxValue > this.minValue) {
-            return 1;
-        }
-        return this.maxValue == this.minValue ? 0 : -1;
+    protected isEmptyValue(value): boolean {
+        return value === null || value === undefined || value === '';
+    }
+
+    public isEmpty(): boolean {
+        return this.isEmptyValue(this.minValue) && this.isEmptyValue(this.maxValue);
+    }
+
+    public operators(): string[] {
+        return DATA_TYPE_OPERATORS['*-in'];
+    }
+
+    public formatValue(): Array<any> {
+        return [this.formatter(this.minValue), this.formatter(this.maxValue)];
     }
 
     public valueToString() {
-        return (this.formatter(this.minValue) || '*') + ' ~ ' + (this.formatter(this.maxValue) || '*');
+        return this.formatValue().map(_ => _ === null ? '*' : _).join(' ~ ');
     }
 
-    public formatter = (value) => (this.format && value !== null && value !== undefined) ? number(value, this.format) : value;
+    public formatter = (value) => this.isEmptyValue(value) ? null : this.format ? number(value, this.format) : value;
 }
 
 export class SelectCondition extends Condition {

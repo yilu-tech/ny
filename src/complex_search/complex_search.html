@@ -96,9 +96,9 @@
 </ng-template>
 
 <ng-template conditionTpl="numeric-in" let-condition>
-    <nz-input-number [(ngModel)]="condition.value[0]" [nzMin]="condition.min" [nzMax]="condition.value[1]"></nz-input-number>
+    <nz-input-number [(ngModel)]="condition.minValue" [nzMin]="condition.min" [nzMax]="condition.maxValue"></nz-input-number>
     <span class="connector">~</span>
-    <nz-input-number [(ngModel)]="condition.value[1]" [nzMin]="condition.value[0]" [nzMax]="condition.max"></nz-input-number>
+    <nz-input-number [(ngModel)]="condition.maxValue" [nzMin]="condition.minValue" [nzMax]="condition.max"></nz-input-number>
 </ng-template>
 
 <ng-template conditionTpl="date" let-condition>
@@ -114,9 +114,9 @@
 </ng-template>
 
 <ng-template conditionTpl="time-in" let-condition>
-    <nz-time-picker [(ngModel)]="condition.value[0]" [nzAllowEmpty]="!condition.required"></nz-time-picker>
+    <nz-time-picker [(ngModel)]="condition.minValue" [nzAllowEmpty]="!condition.required"></nz-time-picker>
     <span class="connector">~</span>
-    <nz-time-picker [(ngModel)]="condition.value[1]" [nzAllowEmpty]="!condition.required"></nz-time-picker>
+    <nz-time-picker [(ngModel)]="condition.maxValue" [nzAllowEmpty]="!condition.required"></nz-time-picker>
 </ng-template>
 
 <ng-template conditionTpl="tree-select" let-condition>
