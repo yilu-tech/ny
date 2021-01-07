@@ -89,7 +89,7 @@ export class Collection {
     private _loadObservable: Subject<any>;
 
     constructor(protected http: Http) {
-        this._conditions.onChange = (e) => this.initialed && this.loadReduce(500);
+        this._conditions.onChange = (e) => this.initialed && this.loadReduce();
     }
 
     public init() {
@@ -111,7 +111,7 @@ export class Collection {
         }
     }
 
-    public loadReduce(delay: number): Promise<any> {
+    public loadReduce(delay: number = 500): Promise<any> {
         if (this._loadPromise) {
             return this._loadPromise;
         }
@@ -170,7 +170,6 @@ export class Collection {
     }
 
     public change(type?: string) {
-
         if (!this.initialed) {
             return;
         }
@@ -183,10 +182,7 @@ export class Collection {
             this.onChange(type);
         }
 
-        this.changed = true;
-        if (!this.pending) {
-            this.load();
-        }
+        this.loadReduce(0);
     }
 
     public export(filename?: string, type: 'all' | 'page' | 'checked' = 'all', headers: Array<any> = null, title?: string, filetype: 'xlsx' | 'csv' = 'xlsx') {

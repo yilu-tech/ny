@@ -2,7 +2,7 @@
     <div class="input" [class.focus]="keywordFocus" (click)="keywordsInput.focus();keywordFocus = true">
         <div class="key-item" *ngFor="let item of conditions.actives()">
             <span>{{item.toString()}}</span>
-            <i nz-icon type="close" theme="outline" (click)="item.check()"></i>
+            <i *ngIf="!item.required" nz-icon type="close" theme="outline" (click)="item.check()"></i>
         </div>
 
         <input #keywordsInput type="text" [(ngModel)]="keyword" (keyup)="keywordChange($event)" (blur)="blur()"/>

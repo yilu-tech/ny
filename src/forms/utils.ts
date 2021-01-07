@@ -73,7 +73,7 @@ export function strtodate(date: string, format?: string): Date {
         }
         return string;
     });
-    
+
     return new Date(y, m, d, h, i, s, u);
 }
 

@@ -55,8 +55,20 @@ export class Condition {
         }
     }
 
+    public set format(value) {
+        this._format = value;
+    }
+
+    public get format() {
+        return this._format;
+    }
+
+    public get used() {
+        return this.checked && !this.isEmpty();
+    }
+
     public get checked() {
-        return this._checked;
+        return this._checked || this.required;
     }
 
     public set checked(value: boolean) {
@@ -75,12 +87,14 @@ export class Condition {
 
     protected _value: any;
     protected _dirty: boolean;
+    protected _format: any;
     protected _checked: boolean;
     protected _listener: Function[] = [];
 
     constructor(name: string, label: string, value?: any, operator: string = '=') {
         this.name = name;
         this.label = label;
+        this._value = '';
         this.setValue(value);
         this.setOperator(operator);
     }
@@ -126,7 +140,7 @@ export class Condition {
     }
 
     public isEmpty() {
-        return this.value === undefined || this.value === null || this.value === '';
+        return this.isEmptyValue(this.value);
     }
 
     public valueToString() {
@@ -150,6 +164,10 @@ export class Condition {
 
     protected emit() {
         this._listener.forEach((fn) => fn(this));
+    }
+
+    protected isEmptyValue(value) {
+        return value === undefined || value === null || value === '';
     }
 }
 
@@ -184,12 +202,35 @@ export class MultiCondition extends Condition {
 export class NumericCondition extends Condition {
     public type = 'numeric';
 
+    public setValue(value) {
+        if (!this.isEmptyValue(value)) {
+            if (this.min !== null && value < this.min) {
+                value = this.min;
+            }
+            if (this.max !== null && value > this.max) {
+                value = this.max;
+            }
+        }
+        if (this._value !== value) {
+            this._value = value;
+            this._dirty = true;
+        }
+        return this;
+    }
+
     public get min() {
         return this._min;
     }
 
     public set min(value) {
-        this._min = value;
+        if (this.isEmptyValue(value)) {
+            this._min = null;
+        } else {
+            this._min = this.max === null ? value : Math.min(value, this.max);
+            if (this.value < this._min) {
+                this.value = this._min;
+            }
+        }
     }
 
     public get max() {
@@ -197,33 +238,47 @@ export class NumericCondition extends Condition {
     }
 
     public set max(value) {
-        this._max = value;
-    }
-
-    public set format(value) {
-        this._format = value;
-    }
-
-    public get format() {
-        return this._format;
+        if (this.isEmptyValue(value)) {
+            this._max = null;
+        } else {
+            this._max = this.min === null ? value : Math.max(value, this.min);
+            if (this.value > this._max) {
+                this.value = this._max;
+            }
+        }
     }
 
     protected _min: any;
     protected _max: any;
-    protected _format: any;
 
     public formatter = (value) => this.format ? number(value, this.format) : value;
 }
 
-export class NumericRangCondition extends MultiCondition {
+export class NumericRangCondition extends Condition {
     public type = 'numeric-in';
 
-    public set minValue(value) {
-        if (this._value[0] !== value) {
-            this._value[0] = value;
-            this._checked = !this.isEmpty();
-            this.emit();
+    public setValue(value) {
+        if (!Array.isArray(value)) {
+            value = [null, null];
         }
+        if (value[0] > value[1]) {
+            return;
+        }
+        if (this.min !== null && !this.isEmptyValue(value[0]) && value[0] < this.min) {
+            value[0] = this.min;
+        }
+        if (this.max !== null && !this.isEmptyValue(value[1]) && value[1] > this.max) {
+            value[1] = this.max;
+        }
+        if (this._value[0] !== value[0] || this._value[1] !== value[1]) {
+            this._value = value;
+            this._dirty = true;
+        }
+        return this;
+    }
+
+    public set minValue(value) {
+        this.value = [value, this.maxValue];
     }
 
     public get minValue() {
@@ -231,11 +286,7 @@ export class NumericRangCondition extends MultiCondition {
     }
 
     public set maxValue(value) {
-        if (this._value[1] !== value) {
-            this._value[1] = value;
-            this._checked = !this.isEmpty();
-            this.emit();
-        }
+        this.value = [this.minValue, value];
     }
 
     public get maxValue() {
@@ -247,7 +298,14 @@ export class NumericRangCondition extends MultiCondition {
     }
 
     public set min(value) {
-        this._min = value;
+        if (this.isEmptyValue(value)) {
+            this._min = null;
+        } else {
+            this._min = this.max === null ? value : Math.min(value, this.max);
+            if (this.minValue < this._min) {
+                this.minValue = this._min;
+            }
+        }
     }
 
     public get max() {
@@ -255,24 +313,18 @@ export class NumericRangCondition extends MultiCondition {
     }
 
     public set max(value) {
-        this._format = value;
-    }
-
-    public set format(value) {
-        this._format = value;
-    }
-
-    public get format() {
-        return this._format;
+        if (this.isEmptyValue(value)) {
+            this._max = null;
+        } else {
+            this._max = this.min === null ? value : Math.max(value, this.min);
+            if (this.maxValue > this._max) {
+                this.maxValue = this._max;
+            }
+        }
     }
 
     protected _min: any;
     protected _max: any;
-    protected _format: any;
-
-    protected isEmptyValue(value): boolean {
-        return value === null || value === undefined || value === '';
-    }
 
     public isEmpty(): boolean {
         return this.isEmptyValue(this.minValue) && this.isEmptyValue(this.maxValue);
@@ -372,7 +424,7 @@ export class DateCondition extends NumericCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => (this.format && value !== null && value !== undefined) ? date(this.format, value) : value;
+    public formatter = (value) => this.isEmptyValue(value) ? null : this.format ? date(this.format, value) : value;
 
     public valueToString() {
         return this.formatter(this.value);
@@ -387,7 +439,7 @@ export class DateRangeCondition extends NumericRangCondition {
         return (this.min && this.min > value) || (this.max && this.max < value);
     };
 
-    public formatter = (value) => (this.format && value !== null && value !== undefined) ? date(this.format, value) : value;
+    public formatter = (value) => this.isEmptyValue(value) ? null : this.format ? date(this.format, value) : value;
 }
 
 export class TimeCondition extends DateCondition {
@@ -410,9 +462,14 @@ export class ConditionGroup {
     public parent: ConditionGroup;
 
     public checked: boolean;
+    public required: boolean = false;
 
     public set onChange(fn) {
         this._listener.push(fn);
+    }
+
+    public get used() {
+        return this.checked && !this.isEmpty();
     }
 
     protected _listener: Function[] = [];
@@ -441,7 +498,7 @@ export class ConditionGroup {
     }
 
     public actives() {
-        return this.items.filter((e) => e.checked && !e.isEmpty());
+        return this.items.filter((e) => e.used);
     }
 
     public check(bool = true) {
@@ -492,7 +549,6 @@ export class ConditionGroup {
             }
         }
         return null;
-
     }
 
     public match(conditionGroup: ConditionGroup): ConditionGroup {
@@ -533,7 +589,7 @@ export class ConditionGroup {
         }
     }
 
-    public append(condition: Condition) {
+    public append(condition: Condition, offset: number = null) {
         condition.onChange = this.emit;
         condition.parent = this;
         if (!condition.inputTemplate) {
@@ -542,22 +598,39 @@ export class ConditionGroup {
         if (!condition.viewTemplate) {
             condition.viewTemplate = this.getTemplate(condition, true);
         }
-        this.items.push(condition);
-        if (condition.checked && !condition.isEmpty()) {
-            this.emit(condition);
+        if (offset === null) {
+            this.items.push(condition);
+        } else {
+            this.items.splice(offset, 0, condition);
+        }
+        this.emit(condition);
+    }
+
+    public replace(condition: Condition | string, replaceValue: Condition) {
+        if (typeof condition === 'string') {
+            condition = this.get(condition);
+        }
+        const index = this.items.indexOf(condition);
+        if (index > -1) {
+            this.items.splice(index, 1);
+            this.append(replaceValue, index);
         }
     }
 
-    public remove(condition: Condition | ConditionGroup) {
+    public remove(condition: Condition | ConditionGroup | string) {
+        if (typeof condition === 'string') {
+            condition = this.get(condition);
+        }
         if (condition instanceof Condition && !condition.closeable) {
             return false;
         }
-        let index = this.items.indexOf(condition);
+        const index = this.items.indexOf(condition);
         if (index > -1) {
             this.items.splice(index, 1);
             if (this.items.length === 0 && this.parent) {
                 this.parent.remove(this);
-            } else if (!condition.isEmpty()) {
+            }
+            if (condition instanceof Condition) {
                 this.emit(condition);
             }
         }

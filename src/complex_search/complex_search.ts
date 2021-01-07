@@ -134,8 +134,13 @@ export class ComplexSearch implements OnChanges, OnInit {
     public keywordChange(event: Event) {
         switch (event['keyCode']) {
             case 8:
-                if (!this.keywordHistory && this.conditions.actives().length) {
-                    let condition = this.conditions.actives().pop();
+                if (!this.keywordHistory) {
+                    let condition;
+                    for (let item of this.conditions.items) {
+                        if (item.used && !item.required) {
+                            condition = item;
+                        }
+                    }
                     if (condition) {
                         condition.check(false);
                     }
@@ -173,7 +178,7 @@ export class ComplexSearch implements OnChanges, OnInit {
     }
 
     public addKeywordCondition(field: Field) {
-        let keyword = this.keyword.trim();
+        let keyword = this.keyword && this.keyword.trim();
 
         if (!keyword || !this.validateConditionLength()) {
             return;

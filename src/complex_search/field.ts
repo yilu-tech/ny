@@ -117,7 +117,7 @@ export class Field implements FieldAble {
         return this.label;
     }
 
-    private createCondition(condition, value, operator) {
+    public createCondition(condition, value?: any, operator: string = '=') {
         condition = new condition(this.path(), this.toString(), value, operator);
         condition.required = this.required;
         if (this.min) {
