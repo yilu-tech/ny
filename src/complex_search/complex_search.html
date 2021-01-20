@@ -96,9 +96,9 @@
 </ng-template>
 
 <ng-template conditionTpl="numeric-in" let-condition>
-    <nz-input-number [(ngModel)]="condition.minValue" [nzMin]="condition.min" [nzMax]="condition.maxValue"></nz-input-number>
+    <nz-input-number [(ngModel)]="condition.minValue" [nzMin]="condition.min" [nzMax]="condition.minMax"></nz-input-number>
     <span class="connector">~</span>
-    <nz-input-number [(ngModel)]="condition.maxValue" [nzMin]="condition.minValue" [nzMax]="condition.max"></nz-input-number>
+    <nz-input-number [(ngModel)]="condition.maxValue" [nzMin]="condition.maxMin" [nzMax]="condition.max"></nz-input-number>
 </ng-template>
 
 <ng-template conditionTpl="date" let-condition>

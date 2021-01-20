@@ -223,13 +223,9 @@ export class NumericCondition extends Condition {
     }
 
     public set min(value) {
-        if (this.isEmptyValue(value)) {
-            this._min = null;
-        } else {
-            this._min = this.max === null ? value : Math.min(value, this.max);
-            if (this.value < this._min) {
-                this.value = this._min;
-            }
+        this._min = this.isEmptyValue(value) ? -Infinity : Math.min(value, this.max);
+        if (this.value < this._min) {
+            this.value = this._min;
         }
     }
 
@@ -238,13 +234,9 @@ export class NumericCondition extends Condition {
     }
 
     public set max(value) {
-        if (this.isEmptyValue(value)) {
-            this._max = null;
-        } else {
-            this._max = this.min === null ? value : Math.max(value, this.min);
-            if (this.value > this._max) {
-                this.value = this._max;
-            }
+        this._max = this.isEmptyValue(value) ? Infinity : Math.max(value, this.min);
+        if (this.value > this._max) {
+            this.value = this._max;
         }
     }
 
@@ -261,13 +253,13 @@ export class NumericRangCondition extends Condition {
         if (!Array.isArray(value)) {
             value = [null, null];
         }
-        if (value[0] > value[1]) {
+        if (!this.isEmptyValue(value[0]) && !this.isEmptyValue(value[1]) && value[0] > value[1]) {
             return;
         }
-        if (this.min !== null && !this.isEmptyValue(value[0]) && value[0] < this.min) {
+        if (!this.isEmptyValue(value[0]) && value[0] < this.min) {
             value[0] = this.min;
         }
-        if (this.max !== null && !this.isEmptyValue(value[1]) && value[1] > this.max) {
+        if (!this.isEmptyValue(value[1]) && value[1] > this.max) {
             value[1] = this.max;
         }
         if (this._value[0] !== value[0] || this._value[1] !== value[1]) {
@@ -279,6 +271,10 @@ export class NumericRangCondition extends Condition {
 
     public set minValue(value) {
         this.value = [value, this.maxValue];
+    }
+
+    public get minMax() {
+        return this.isEmptyValue(this.maxValue) ? Infinity : this.maxValue;
     }
 
     public get minValue() {
@@ -293,18 +289,18 @@ export class NumericRangCondition extends Condition {
         return this._value[1];
     }
 
+    public get maxMin() {
+        return this.isEmptyValue(this.minValue) ? -Infinity : this.minValue;
+    }
+
     public get min() {
         return this._min;
     }
 
     public set min(value) {
-        if (this.isEmptyValue(value)) {
-            this._min = null;
-        } else {
-            this._min = this.max === null ? value : Math.min(value, this.max);
-            if (this.minValue < this._min) {
-                this.minValue = this._min;
-            }
+        this._min = this.isEmptyValue(value) ? -Infinity : Math.min(value, this.max);
+        if (this.minValue < this._min) {
+            this.minValue = this._min;
         }
     }
 
@@ -313,18 +309,14 @@ export class NumericRangCondition extends Condition {
     }
 
     public set max(value) {
-        if (this.isEmptyValue(value)) {
-            this._max = null;
-        } else {
-            this._max = this.min === null ? value : Math.max(value, this.min);
-            if (this.maxValue > this._max) {
-                this.maxValue = this._max;
-            }
+        this._max = this.isEmptyValue(value) ? Infinity : Math.max(value, this.min);
+        if (this.maxValue > this._max) {
+            this.maxValue = this._max;
         }
     }
 
-    protected _min: any;
-    protected _max: any;
+    protected _min: any = -Infinity;
+    protected _max: any = Infinity;
 
     public isEmpty(): boolean {
         return this.isEmptyValue(this.minValue) && this.isEmptyValue(this.maxValue);
