@@ -17,9 +17,7 @@ export declare interface FieldAble {
     name: string;
 
     label: string;
-
-    showTime: boolean;
-
+    
     path: () => string;
 
     toString: () => string;
