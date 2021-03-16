@@ -411,6 +411,8 @@ export class TreeSelectCondition extends Condition {
 export class DateCondition extends NumericCondition {
     public type = 'date';
 
+    public showTime: boolean;
+
     public range = (value) => {
         value = date(this.format, value);
         return (this.min && this.min > value) || (this.max && this.max < value);
@@ -425,6 +427,8 @@ export class DateCondition extends NumericCondition {
 
 export class DateRangeCondition extends NumericRangCondition {
     public type = 'date-in';
+
+    public showTime: boolean;
 
     public range = (value) => {
         value = date(this.format, value);
