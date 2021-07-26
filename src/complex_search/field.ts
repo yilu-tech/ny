@@ -11,13 +11,13 @@ import {
     NumericRangCondition
 } from './condition';
 
-const FIELD_PROPERTIES = ['name', 'label', 'itype', 'ctype', 'isFullLabel', 'custom', 'min', 'max', 'format', 'options', 'required'];
+const FIELD_PROPERTIES = ['name', 'label', 'itype', 'showTime', 'ctype', 'isFullLabel', 'custom', 'min', 'max', 'format', 'options', 'required'];
 
 export declare interface FieldAble {
     name: string;
 
     label: string;
-
+    
     path: () => string;
 
     toString: () => string;
@@ -28,6 +28,7 @@ export class Field implements FieldAble {
 
     public name: string;
     public label: string;
+    public showTime: boolean;
 
     public min: any;
     public max: any;
@@ -120,6 +121,14 @@ export class Field implements FieldAble {
     public createCondition(condition, value?: any, operator: string = '=') {
         condition = new condition(this.path(), this.toString(), value, operator);
         condition.required = this.required;
+        switch (condition.type) {
+            case 'date':
+            case 'date-in':
+                condition.showTime = this.showTime;
+                break;
+            default:
+                break;
+        }
         if (this.min) {
             condition.min = this.min;
         }
